@@ -5,7 +5,7 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView
-#from .models import Team
+from .models import Team
 
 def register(request):
 	if request.method == 'POST':
@@ -41,4 +41,8 @@ def profile(request):
 	}
 	return render(request, 'users/profile.html', context)
 
+
+class TeamCreateView(LoginRequiredMixin, CreateView):
+	model = Team
+	fields = ['name', 'pin']
 
