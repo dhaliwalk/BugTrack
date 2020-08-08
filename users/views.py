@@ -56,10 +56,12 @@ def TeamJoin(request, pk=None):
 	if pk:
 		team = Team.objects.get(pk=pk)
 	if request.method == 'POST':
-		instance = Membership(user=request.user, team=Team.objects.get(pk=pk))
-		instance.save()
-		return redirect('home')
-
+		if int(request.POST.get('pin')) == int(Team.objects.get(pk=pk).pin):
+			instance = Membership(user=request.user, team=Team.objects.get(pk=pk))
+			instance.save()
+			return redirect('home')
+		else:
+			messages.warning(request, 'Invalid Pin')
 	return render(request, 'users/teamjoin.html', {'team': team})
 
 
