@@ -5,7 +5,7 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView
-from .models import Team
+from .models import Team, Membership
 
 def register(request):
 	if request.method == 'POST':
@@ -45,4 +45,21 @@ def profile(request):
 class TeamCreateView(LoginRequiredMixin, CreateView):
 	model = Team
 	fields = ['name', 'pin']
+
+
+def TeamList(request):
+	teams = Team.objects.all()
+	return render(request, 'users/teamlist.html', {'teams': teams})
+
+
+def TeamJoin(request, pk=None):
+	if pk:
+		team = Team.objects.get(pk=pk)
+	if request.method == 'POST':
+		instance = Membership(user=request.user, team=Team.objects.get(pk=pk))
+		instance.save()
+		return redirect('home')
+
+	return render(request, 'users/teamjoin.html', {'team': team})
+
 

@@ -1,0 +1,9 @@
+{% extends "main/base.html" %}
+{% block content %}
+	<h1>Teams</h1>
+	{% for team in teams %}
+		<article class="media content-section">
+			<h2>{{ team.name }}</h2> <button type="button" class="btn btn-success btn-sm mt-1 mb-1"><a href="{% url 'team-join' team.id %}"> Join </a></button>
+		</article>
+	{% endfor %}
+{% endblock content %}
