@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'tickets.apps.TicketsConfig',
+    'projects.apps.ProjectsConfig',
     'main.apps.MainConfig',
     'crispy_forms',
     'users.apps.UsersConfig',
