@@ -1,0 +1,8 @@
+{% extends "main/base.html" %}
+{% block content %}
+	<h1>Users</h1>
+	{% for project in projects %}
+
+		<h1>{{ project.name }}</h1> <button type="button" class="btn btn-success btn-sm mt-1 mb-1"><a href="{% url 'project-join' project.id %}"> Join </a></button>
+	{% endfor %}
+{% endblock content %}
