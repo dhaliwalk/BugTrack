@@ -6,7 +6,7 @@
 			<h2>{{ team.name }}</h2>
 			<form method="POST">{% csrf_token %}
 				<input type="number" name="pin" id="pin" />
-				<button type="submit">Join Team</button>
+				<button type="submit" class="btn btn-success btn-sm mt-1 mb-1">Join Team</button>
 			</form>
 		</article>
 {% endblock content %}
