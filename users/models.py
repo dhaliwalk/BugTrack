@@ -23,5 +23,6 @@ class Team(models.Model):
 class Membership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    role = models.CharField(max_length=25)
     def __str__(self):
-        return self.user.username + " + " + self.team.name
+        return self.user.username + " + " + self.team.name + " Role:" + self.role

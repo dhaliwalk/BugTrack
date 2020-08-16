@@ -6,8 +6,9 @@ from django.contrib import messages
 def list(request):
 	user = request.user
 	team = user.team_set.first()
-	projects = team.project_set.all()
-	return render(request, 'projects/project_list.html', {'projects': projects})
+	projects = team.project_set.filter(members=user)
+	role = user.membership_set.first().role
+	return render(request, 'projects/project_list.html', {'projects': projects, 'role': role})
 
 def ProjectJoin(request, pk=None):
 	if pk:

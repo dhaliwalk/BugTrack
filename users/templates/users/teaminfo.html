@@ -1,0 +1,12 @@
+{% extends "main/base.html" %}
+{% block content %}
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<h1 class="h2">Hi{{ team.name }}</h1>	
+    </div>
+	<h2>Members</h2>
+	{% for member in members %}
+		<article class="media content-section">
+			<h3>{{ member.username }}</h3> 
+		</article>
+	{% endfor %}
+{% endblock content %}

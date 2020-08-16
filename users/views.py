@@ -48,8 +48,9 @@ class TeamCreateView(LoginRequiredMixin, CreateView):
 
 
 def TeamList(request):
-	teams = Team.objects.all()
-	return render(request, 'users/teamlist.html', {'teams': teams})
+	team = request.user.team_set.first()
+	members = team.members.all()
+	return render(request, 'users/teaminfo.html', {'teams': team, 'members': members})
 
 
 def TeamJoin(request, pk=None):
