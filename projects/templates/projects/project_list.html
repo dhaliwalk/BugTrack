@@ -1,8 +1,9 @@
 {% extends "main/base.html" %}
 {% block content %}
 		<div class="table-responsive">
-      {% if role == 'hi' %}
-        <h1>It Works</h1>
+      <!-- need to change this to 'admin' -->
+      {% if role == 'admin' %}
+        <a href="{% url 'project-create' %}" class="btn btn-info btn-lg active mb-3" role="button" aria-pressed="true">Create A New Project</a>
       {% endif %}
         <table class="table table-striped table-sm">
           <thead>
