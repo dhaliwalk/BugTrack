@@ -12,3 +12,14 @@ class Ticket(models.Model):
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_updated = models.DateTimeField(auto_now=True)
 	ticket_type = models.CharField(max_length=128)
+
+	def __str__(self):
+		return self.title
+
+class Comment(models.Model):
+	message = models.CharField(max_length=500)
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+	date_created = models.DateTimeField(auto_now_add=True)
+	ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+	def __str__(self):
+		return self.message
