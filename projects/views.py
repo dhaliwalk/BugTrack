@@ -23,6 +23,12 @@ def ProjectJoin(request, pk=None):
 		return redirect('home')			
 	return render(request, 'projects/project_join.html', {'project': project})
 
+def ProjectInfo(request, pk=None):
+	if pk:
+		project = Project.objects.get(pk=pk)
+	tickets = project.ticket_set.all()
+	return render(request, 'projects/project_info.html', {'tickets': tickets, 'project':project})
+
 class ProjectCreateView(LoginRequiredMixin, CreateView):
 	model = Project
 	fields = ['name', 'description']
