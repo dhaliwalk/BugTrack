@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Ticket 
+from .models import Ticket, Comment 
 from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView
@@ -19,4 +19,14 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
 		project = Project.objects.get(pk=pk)
 		form.instance.project = project
 		form.instance.submitter = self.request.user
+		return super().form_valid(form)
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+	model = Comment
+	fields = ['message']
+
+	def form_valid(self, form):
+		pk = self.kwargs['pk']
+		form.instance.ticket = Ticket.objects.get(pk=pk)
+		form.instance.author = self.request.user
 		return super().form_valid(form)

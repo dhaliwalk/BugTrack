@@ -8,9 +8,12 @@ from django.views.generic import CreateView
 
 def list(request):
 	user = request.user
-	team = user.team_set.first()
-	projects = team.project_set.filter(members=user)
 	role = user.membership_set.first().role
+	team = user.team_set.first()
+	if role == 'admin':
+		projects = team.project_set.all()
+	else:
+		projects = team.project_set.filter(members=user)
 	return render(request, 'projects/project_list.html', {'projects': projects, 'role': role})
 
 def ProjectJoin(request, pk=None):
