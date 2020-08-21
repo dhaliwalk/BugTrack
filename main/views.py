@@ -4,7 +4,7 @@ from users.views import register
 Group = Team.objects.get(name='cool').members.all()
 def home(request):
 	if request.user.is_authenticated:
-		return render(request, 'main/base.html')
+		return render(request, 'main/dashboard.html')
 	else:
 		return register(request)
 	
