@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Project, ProjectMember
 from users.models import Team
 from django.contrib import messages
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView, DeleteView
 
 
 def list(request):
@@ -39,3 +39,26 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
 	def form_valid(self, form):
 		form.instance.team = self.request.user.team_set.first()
 		return super().form_valid(form)
+
+class ProjectUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
+	model = Project
+	fields = ['name', 'description']
+
+	def test_func(self):
+		project = self.get_object()
+		if project in self.request.user.team_set.first().project_set.filter(members=self.request.user):
+			return True
+		return False
+
+class ProjectDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
+	model = Project
+	success_url = "/"
+	def test_func(self):
+		project = self.get_object()
+		if project in self.request.user.team_set.first().project_set.filter(members=self.request.user):
+			return True
+		return False
+
+
+
+		

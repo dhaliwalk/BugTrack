@@ -17,6 +17,13 @@
             <tr>
               <td><a href="{% url 'project-info' project.id%}">{{ project.name }}</a></td>
               <td>{{ project.description }}</td>
+              <td>
+                {% if role == 'admin' %}
+                  <a href="{% url 'project-update' project.id %}" class="btn btn-secondary btn-sm mt-1 mb-1">Update</a>
+                  <a href="{% url 'project-delete' project.id %}" class="btn btn-danger btn-sm mt-1 mb-1">Delete</a>
+                  </div>
+                {% endif %}
+              </td>
             </tr>
             {% endfor %}
           </tbody>
