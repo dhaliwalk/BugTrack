@@ -10,8 +10,8 @@ class Profile(models.Model):
 		return f'{self.user.username} Profile'
 
 class Team(models.Model):
-    name = models.CharField(max_length=128)
-    pin = models.IntegerField(unique=True)
+    name = models.CharField(max_length=128, unique=True)
+    pin = models.IntegerField()
     members = models.ManyToManyField(User, through='Membership')
 
     def __str__(self):

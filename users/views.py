@@ -1,23 +1,55 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, TeamJoinForm, TeamCreateForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView
 from .models import Team, Membership
 
-def register(request):
+def RegisterUserJoinTeam(request):
 	if request.method == 'POST':
 		form = UserRegisterForm(request.POST)
-		if form.is_valid():
+		form_t = TeamJoinForm(request.POST)
+		if form.is_valid() and form_t.is_valid():
 			form.save()
-			username = form.cleaned_data.get('username')
+			user = User.objects.get(username=form.cleaned_data.get('username'))
+			if Team.objects.filter(name=form_t.cleaned_data.get('team_name')).count() == 0:
+				messages.warning(request, 'Invalid Team Name')
+				return render(request, 'users/register.html', {'form': form, 'form_t': form_t})
+			else:
+				team = Team.objects.get(name=form_t.cleaned_data.get('team_name'))
+				if int(form_t.cleaned_data.get('team_pin')) == int(team.pin):
+					instance = Membership(user=user, team=team, role='unassigned')
+					instance.save()
+				else:
+					messages.warning(request, 'Invalid Pin')
+					return render(request, 'users/register.html', {'form': form, 'form_t': form_t})
 			messages.success(request, 'You account has been created you can now log in!')
 			return redirect('login')
 	else:
 		form = UserRegisterForm()
-	return render(request, 'users/register.html', {'form': form})
+		form_t = TeamJoinForm()
+	return render(request, 'users/register_join.html', {'form': form, 'form_t': form_t})
+
+def RegisterUserCreateTeam(request):
+	if request.method == 'POST':
+		form = UserRegisterForm(request.POST)
+		form_t = TeamCreateForm(request.POST)
+		if form.is_valid() and form_t.is_valid():
+			form.save()
+			form_t.save()
+			user = User.objects.get(username=form.cleaned_data.get('username'))
+			team = Team.objects.get(name=form_t.cleaned_data.get('name'))
+			instance = Membership(user=user, team=team, role='unassigned')
+			instance.save()
+			messages.success(request, 'You account and team has been created you can now log in!')
+			return redirect('login')
+	else:
+		form = UserRegisterForm()
+		form_t = TeamJoinForm()
+	return render(request, 'users/register_create.html', {'form': form, 'form_t': form_t})
 
 
 @login_required
@@ -53,16 +85,20 @@ def TeamList(request):
 	return render(request, 'users/teaminfo.html', {'teams': team, 'members': members})
 
 
-def TeamJoin(request, pk=None):
-	if pk:
-		team = Team.objects.get(pk=pk)
+def TeamJoin(request):	
 	if request.method == 'POST':
-		if int(request.POST.get('pin')) == int(Team.objects.get(pk=pk).pin):
-			instance = Membership(user=request.user, team=Team.objects.get(pk=pk))
-			instance.save()
-			return redirect('home')
+		if Team.objects.filter(name=request.POST.get('team_name')).count() == 0:
+			messages.warning(request, 'Invalid Team Name')
 		else:
-			messages.warning(request, 'Invalid Pin')
-	return render(request, 'users/teamjoin.html', {'team': team})
+			team = Team.objects.get(name=request.POST.get('team_name'))
+			if int(request.POST.get('pin')) == int(team.pin):
+				instance = Membership(user=request.user, team=team)
+				instance.save()
+				messages.success(request, 'Team Joined')
+				return redirect('home')
+			else:
+				messages.warning(request, 'Invalid Pin')
+
+	return render(request, 'users/teamjoin.html')
 
 
