@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Ticket, Comment 
+from .models import Ticket, Comment, History 
 from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -19,6 +19,7 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
 		project = Project.objects.get(pk=pk)
 		form.instance.project = project
 		form.instance.submitter = self.request.user
+		History.objects.create(user=self.request.user, action="Created Ticket", old_value=' ', new_value=form.instance.title)
 		return super().form_valid(form)
 
 class TicketUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
@@ -27,6 +28,16 @@ class TicketUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 
 	def form_valid(self, form):
 		form.instance.submitter = self.request.user
+		old_ticket = Ticket.objects.get(pk=self.kwargs['pk']).__dict__
+		for field, value in old_ticket.items():
+			if field in ['id', 'submitter_id', 'project_id', 'date_created', 'date_updated']:
+				continue
+			else:
+				newval = getattr(form.instance, field)
+				if value == newval:
+					continue
+				else:
+					History.objects.create(user=self.request.user, action=f"Updated {field} field", old_value=value, new_value=newval, ticket=self.get_object())
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -59,7 +70,9 @@ class CommentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	fields = ['message']
 
 	def form_valid(self, form):
-		form.instance.author = self.request.user
+		form.instance.submitter = self.request.user
+		old_comment = Comment.objects.get(pk=self.kwargs['pk']).__dict__
+		History.objects.create(user=self.request.user, action=f"Updated Comment", old_value=old_comment['message'], new_value=form.instance.message, ticket=self.get_object().ticket)
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -71,6 +84,10 @@ class CommentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 class CommentDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 	model = Comment
 	success_url = "/"
+	def delete(self, request, *args, **kwargs):
+		comment = self.get_object()
+		History.objects.create(user=self.request.user, action=f"Deleted comment '{comment.message}'", old_value=comment.message, new_value='', ticket=comment.ticket)
+		return super(CommentDeleteView, self).delete(request, *args, **kwargs)
 	def test_func(self):
 		comment = self.get_object()
 		if self.request.user == comment.author:
