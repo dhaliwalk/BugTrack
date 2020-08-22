@@ -11,9 +11,9 @@ def list(request):
 	role = user.membership.role
 	team = user.membership.team
 	if role == 'admin':
-		projects = team.project_set.all()
+		projects = team.project_set.all().order_by('name')
 	else:
-		projects = team.project_set.filter(members=user)
+		projects = team.project_set.filter(members=user).order_by('name')
 	return render(request, 'projects/project_list.html', {'projects': projects, 'role': role})
 
 def ProjectJoin(request, pk=None):
@@ -29,8 +29,8 @@ def ProjectJoin(request, pk=None):
 def ProjectInfo(request, pk=None):
 	if pk:
 		project = Project.objects.get(pk=pk)
-	members = project.members.all()
-	tickets = project.ticket_set.all()
+	members = project.members.all().order_by('username')
+	tickets = project.ticket_set.all().order_by('-date_created')
 	return render(request, 'projects/project_info.html', {'tickets': tickets, 'project':project, 'members': members})
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):

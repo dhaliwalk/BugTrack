@@ -8,11 +8,12 @@ from django.urls import reverse
 def TicketInfo(request, pk=None):
 	if pk:
 		ticket = Ticket.objects.get(pk=pk)
-	comments = ticket.comment_set.all()
-	return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket})
+	comments = ticket.comment_set.all().order_by('-date_created')
+	history_list = ticket.history_set.all().order_by('-date_changed')
+	return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket, 'history_list': history_list})
 
 def my_tickets(request):
-	tickets = Ticket.objects.filter(submitter=request.user)
+	tickets = Ticket.objects.filter(submitter=request.user).order_by('-date_updated')
 	return render(request, 'tickets/my_tickets.html', {'tickets':tickets})
 
 class TicketCreateView(LoginRequiredMixin, CreateView):
