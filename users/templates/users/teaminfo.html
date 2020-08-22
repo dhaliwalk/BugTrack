@@ -4,9 +4,24 @@
 	<h1 class="h2">Hi{{ team.name }}</h1>	
     </div>
 	<h2>Members</h2>
-	{% for member in members %}
-		<article class="media content-section">
-			<h3>{{ member.username }}</h3> 
-		</article>
-	{% endfor %}
+	<div class="table-responsive">
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>User Name</th>
+          <th>Email</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+		  {% for member in members %}
+        <tr>
+          <td>{{ member.username }}</td>
+          <td>{{ member.email }}</td>
+          <td>{{ member.membership.role }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock content %}

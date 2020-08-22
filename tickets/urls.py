@@ -3,6 +3,7 @@ from . import views
 from .views import TicketCreateView, TicketUpdateView, TicketDeleteView, CommentCreateView, CommentUpdateView, CommentDeleteView
 
 urlpatterns = [
+	path('', views.my_tickets, name='tickets'),
     path('<int:pk>/info/', views.TicketInfo, name='ticket-info'),
     path('<int:pk>/new/', TicketCreateView.as_view(), name='ticket-create'),
     path('<int:pk>/update/', TicketUpdateView.as_view(), name='ticket-update'),

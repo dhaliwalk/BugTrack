@@ -8,8 +8,8 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 
 def list(request):
 	user = request.user
-	role = user.membership_set.first().role
-	team = user.team_set.first()
+	role = user.membership.role
+	team = user.membership.team
 	if role == 'admin':
 		projects = team.project_set.all()
 	else:
@@ -29,8 +29,9 @@ def ProjectJoin(request, pk=None):
 def ProjectInfo(request, pk=None):
 	if pk:
 		project = Project.objects.get(pk=pk)
+	members = project.members.all()
 	tickets = project.ticket_set.all()
-	return render(request, 'projects/project_info.html', {'tickets': tickets, 'project':project})
+	return render(request, 'projects/project_info.html', {'tickets': tickets, 'project':project, 'members': members})
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
 	model = Project

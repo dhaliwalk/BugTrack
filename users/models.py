@@ -21,8 +21,8 @@ class Team(models.Model):
     	return reverse('home')
 
 class Membership(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    role = models.CharField(max_length=25)
+    role = models.CharField(max_length=25, null=True)
     def __str__(self):
         return self.user.username + " + " + self.team.name + " Role:" + self.role

@@ -3,6 +3,7 @@ from .models import Ticket, Comment, History
 from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
+from django.urls import reverse
 
 def TicketInfo(request, pk=None):
 	if pk:
@@ -10,9 +11,16 @@ def TicketInfo(request, pk=None):
 	comments = ticket.comment_set.all()
 	return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket})
 
+def my_tickets(request):
+	tickets = Ticket.objects.filter(submitter=request.user)
+	return render(request, 'tickets/my_tickets.html', {'tickets':tickets})
+
 class TicketCreateView(LoginRequiredMixin, CreateView):
 	model = Ticket
 	fields = ['title', 'description', 'priority', 'status', 'ticket_type']
+
+	def get_success_url(self):
+		return reverse('project-info', kwargs={'pk': self.kwargs['pk']})
 
 	def form_valid(self, form):
 		pk = self.kwargs['pk']
@@ -25,6 +33,9 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
 class TicketUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Ticket
 	fields = ['title', 'description', 'priority', 'status', 'ticket_type']
+
+	def get_success_url(self):
+		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
 
 	def form_valid(self, form):
 		form.instance.submitter = self.request.user
@@ -48,7 +59,11 @@ class TicketUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 
 class TicketDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 	model = Ticket
-	success_url = "/"
+	
+	def get_success_url(self):
+		project = self.get_object().project
+		return reverse('project-info', kwargs={'pk': project.id})
+	
 	def test_func(self):
 		ticket = self.get_object()
 		if self.request.user == ticket.submitter:
@@ -58,7 +73,10 @@ class TicketDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 class CommentCreateView(LoginRequiredMixin, CreateView):
 	model = Comment
 	fields = ['message']
-
+	
+	def get_success_url(self):
+		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
+	
 	def form_valid(self, form):
 		pk = self.kwargs['pk']
 		form.instance.ticket = Ticket.objects.get(pk=pk)
@@ -68,6 +86,11 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 class CommentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Comment
 	fields = ['message']
+
+	def get_success_url(self):
+		comment = self.get_object()
+		ticket = comment.ticket
+		return reverse('ticket-info', kwargs={'pk': ticket.id})
 
 	def form_valid(self, form):
 		form.instance.submitter = self.request.user
@@ -83,11 +106,16 @@ class CommentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 
 class CommentDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 	model = Comment
-	success_url = "/"
+
+	def get_success_url(self):
+		ticket = self.get_object().ticket
+		return reverse('ticket-info', kwargs={'pk': ticket.id})
+
 	def delete(self, request, *args, **kwargs):
 		comment = self.get_object()
 		History.objects.create(user=self.request.user, action=f"Deleted comment '{comment.message}'", old_value=comment.message, new_value='', ticket=comment.ticket)
 		return super(CommentDeleteView, self).delete(request, *args, **kwargs)
+	
 	def test_func(self):
 		comment = self.get_object()
 		if self.request.user == comment.author:

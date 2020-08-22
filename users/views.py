@@ -17,7 +17,7 @@ def RegisterUserJoinTeam(request):
 			user = User.objects.get(username=form.cleaned_data.get('username'))
 			if Team.objects.filter(name=form_t.cleaned_data.get('team_name')).count() == 0:
 				messages.warning(request, 'Invalid Team Name')
-				return render(request, 'users/register.html', {'form': form, 'form_t': form_t})
+				return render(request, 'users/register_join.html', {'form': form, 'form_t': form_t})
 			else:
 				team = Team.objects.get(name=form_t.cleaned_data.get('team_name'))
 				if int(form_t.cleaned_data.get('team_pin')) == int(team.pin):
@@ -25,7 +25,7 @@ def RegisterUserJoinTeam(request):
 					instance.save()
 				else:
 					messages.warning(request, 'Invalid Pin')
-					return render(request, 'users/register.html', {'form': form, 'form_t': form_t})
+					return render(request, 'users/register_join.html', {'form': form, 'form_t': form_t})
 			messages.success(request, 'You account has been created you can now log in!')
 			return redirect('login')
 	else:
@@ -46,6 +46,8 @@ def RegisterUserCreateTeam(request):
 			instance.save()
 			messages.success(request, 'You account and team has been created you can now log in!')
 			return redirect('login')
+		else:
+			messages.warning(request, 'Fields are Invalid')
 	else:
 		form = UserRegisterForm()
 		form_t = TeamJoinForm()
