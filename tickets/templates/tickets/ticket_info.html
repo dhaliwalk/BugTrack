@@ -64,6 +64,27 @@
       </tbody>
     </table>
   </div>
-
-	
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h3>Attachments</h3>
+  </div>
+	<div class="table-responsive">
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Description</th>
+          <th>File</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for attachment in attachments %}
+        <tr>
+          <td>{{ attachment.poster }}</td>
+          <td>{{ attachment.description }}</td>
+          <td><a href="{{ attachment.file.url }}">{{ attachment.title }}</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock content %}

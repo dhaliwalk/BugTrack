@@ -44,6 +44,19 @@ class Comment(models.Model):
 	def get_absolute_url(self):
 		return reverse('home')
 
+class Attachment(models.Model):
+	file = models.FileField(upload_to='ticket_attachments_bugtrack')
+	title = models.CharField(max_length=128)
+	description = models.CharField(max_length=500)
+	poster = models.ForeignKey(User, on_delete=models.CASCADE)
+	date_created = models.DateTimeField(auto_now_add=True)
+	ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+	def __str__(self):
+		return self.title
+
+	def get_absolute_url(self):
+		return reverse('home')
+
 class History(models.Model):
 	ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, null=True)
 	user = models.ForeignKey(User, on_delete=models.CASCADE)

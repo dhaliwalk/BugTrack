@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Ticket, Comment, History 
+from .models import Ticket, Comment, History, Attachment 
 from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -10,7 +10,8 @@ def TicketInfo(request, pk=None):
 		ticket = Ticket.objects.get(pk=pk)
 	comments = ticket.comment_set.all().order_by('-date_created')
 	history_list = ticket.history_set.all().order_by('-date_changed')
-	return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket, 'history_list': history_list})
+	attachments = ticket.attachment_set.all().order_by('-date_created')
+	return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments})
 
 def my_tickets(request):
 	tickets = Ticket.objects.filter(submitter=request.user).order_by('-date_updated')
