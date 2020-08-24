@@ -42,9 +42,7 @@ class TicketUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 		form.instance.submitter = self.request.user
 		old_ticket = Ticket.objects.get(pk=self.kwargs['pk']).__dict__
 		for field, value in old_ticket.items():
-			if field in ['id', 'submitter_id', 'project_id', 'date_created', 'date_updated']:
-				continue
-			else:
+			if field in ['title', 'description', 'priority', 'status', 'ticket_type']:
 				newval = getattr(form.instance, field)
 				if value == newval:
 					continue
