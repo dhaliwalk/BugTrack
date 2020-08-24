@@ -81,6 +81,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 		pk = self.kwargs['pk']
 		form.instance.ticket = Ticket.objects.get(pk=pk)
 		form.instance.author = self.request.user
+		History.objects.create(user=self.request.user, action=f"Created comment", old_value="", new_value=form.instance.message, ticket=form.instance.ticket)
 		return super().form_valid(form)
 
 class CommentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
@@ -121,6 +122,64 @@ class CommentDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 		if self.request.user == comment.author:
 			return True
 		return False
+
+class AttachmentCreateView(LoginRequiredMixin, CreateView):
+	model = Attachment
+	fields = ['title', 'description', 'file']
+	
+	def get_success_url(self):
+		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
+	
+	def form_valid(self, form):
+		pk = self.kwargs['pk']
+		form.instance.ticket = Ticket.objects.get(pk=pk)
+		form.instance.poster = self.request.user
+		return super().form_valid(form)
+
+class AttachmentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
+	model = Attachment
+	fields = ['title', 'description', 'file']
+
+	def get_success_url(self):
+		return reverse('ticket-info', kwargs={'pk': self.get_object().ticket.id})
+
+	def form_valid(self, form):
+		form.instance.poster = self.request.user
+		old_attachment = Attachment.objects.get(pk=self.kwargs['pk']).__dict__
+		for field, value in old_attachment.items():
+			if field in ['title', 'description', 'file']:
+				newval = getattr(form.instance, field)
+				if value == newval:
+					continue
+				else:
+					History.objects.create(user=self.request.user, action=f"Updated {field} field on attachment", old_value=value, new_value=newval, ticket=self.get_object().ticket)
+		return super().form_valid(form)
+
+	def test_func(self):
+		attachment = self.get_object()
+		if self.request.user == attachment.poster:
+			return True
+		return False
+
+
+class AttachmentDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
+	model = Attachment
+
+	def get_success_url(self):
+		ticket = self.get_object().ticket
+		return reverse('ticket-info', kwargs={'pk': ticket.id})
+
+	def delete(self, request, *args, **kwargs):
+		attachment = self.get_object()
+		History.objects.create(user=self.request.user, action=f"Deleted attachment '{attachment.title}'", old_value=attachment.title, new_value='', ticket=attachment.ticket)
+		return super(AttachmentDeleteView, self).delete(request, *args, **kwargs)
+	
+	def test_func(self):
+		attachment = self.get_object()
+		if self.request.user == attachment.poster:
+			return True
+		return False
+
 
 
 

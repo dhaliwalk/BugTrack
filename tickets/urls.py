@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import TicketCreateView, TicketUpdateView, TicketDeleteView, CommentCreateView, CommentUpdateView, CommentDeleteView
+from .views import TicketCreateView, TicketUpdateView, TicketDeleteView, CommentCreateView, CommentUpdateView, CommentDeleteView, AttachmentCreateView, AttachmentUpdateView, AttachmentDeleteView
 
 urlpatterns = [
 	path('', views.my_tickets, name='tickets'),
@@ -11,4 +11,7 @@ urlpatterns = [
     path('<int:pk>/comment/new/', CommentCreateView.as_view(), name='comment-create'),
     path('<int:pk>/comment/update/', CommentUpdateView.as_view(), name='comment-update'),
     path('<int:pk>/comment/delete/', CommentDeleteView.as_view(), name='comment-delete'),
+    path('<int:pk>/attachment/new/', AttachmentCreateView.as_view(), name='attachment-create'),
+    path('<int:pk>/attachment/update/', AttachmentUpdateView.as_view(), name='attachment-update'),
+    path('<int:pk>/attachment/delete/', AttachmentDeleteView.as_view(), name='attachment-delete'),
 ]
