@@ -4,12 +4,25 @@ from projects.models import Project
 from django.urls import reverse
 
 class Ticket(models.Model):
+	status_choices = [
+		("OPEN", "Open"),
+		("IN_PROGRESS", "In Progress"),
+		("RESOLVED", "Resolved"),
+		("CLOSED", "Closed"),
+		("WAITING_ON_MORE_INFO", "Waiting on More Info"),
+	]
+	priority_choices = [
+		("HIGH", "High"),
+		("MEDIUM", "Medium"),
+		("LOW", "Low"),
+		("NONE", "None"),
+	]
 	title = models.CharField(max_length=128)
 	description = models.CharField(max_length=500)
 	submitter = models.ForeignKey(User, on_delete=models.CASCADE)
 	project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
-	priority = models.CharField(max_length=128)
-	status = models.CharField(max_length=128)
+	priority = models.CharField(max_length=128, choices=priority_choices, default="None")
+	status = models.CharField(max_length=128, choices=status_choices, default="OPEN")
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_updated = models.DateTimeField(auto_now=True)
 	ticket_type = models.CharField(max_length=128)
