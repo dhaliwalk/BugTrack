@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Ticket, Comment, History, Attachment 
+from .models import Ticket, Comment, History, Attachment, TicketDev
 from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -11,7 +11,8 @@ def TicketInfo(request, pk=None):
 	comments = ticket.comment_set.all().order_by('-date_created')
 	history_list = ticket.history_set.all().order_by('-date_changed')
 	attachments = ticket.attachment_set.all().order_by('-date_created')
-	return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments})
+	developers = TicketDev.objects.filter(ticket=ticket)
+	return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
 
 def my_tickets(request):
 	tickets = Ticket.objects.filter(submitter=request.user).order_by('-date_updated')
@@ -134,6 +135,7 @@ class AttachmentCreateView(LoginRequiredMixin, CreateView):
 		pk = self.kwargs['pk']
 		form.instance.ticket = Ticket.objects.get(pk=pk)
 		form.instance.poster = self.request.user
+		History.objects.create(user=self.request.user, action=f"Added Attachment", old_value="", new_value=form.instance.title, ticket=form.instance.ticket)
 		return super().form_valid(form)
 
 class AttachmentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
@@ -180,7 +182,39 @@ class AttachmentDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 			return True
 		return False
 
+class TicketDevCreateView(LoginRequiredMixin, CreateView):
+	model = TicketDev
+	fields = ['user']
 
+	def get_form(self, form_class=None):
+		form = super().get_form(form_class)
+		form.fields['user'].queryset = Project.objects.get(pk=Ticket.objects.get(pk=self.kwargs['pk']).project.id).members
+		return form
+
+	def get_success_url(self):
+		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
+	
+	def form_valid(self, form):
+		pk = self.kwargs['pk']
+		form.instance.ticket = Ticket.objects.get(pk=pk)
+		History.objects.create(user=self.request.user, action=f"Added Developer", old_value="", new_value=form.instance.user.username, ticket=form.instance.ticket)
+		return super().form_valid(form)
+
+class TicketDevDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
+	model = TicketDev
+	def get_success_url(self):
+		ticket = self.get_object().ticket
+		return reverse('ticket-info', kwargs={'pk': ticket.id})
+
+	def delete(self, request, *args, **kwargs):
+		ticketdev = self.get_object()
+		History.objects.create(user=self.request.user, action=f"Removed developer '{ticketdev.user.username}'", old_value=ticketdev.user.username, new_value='', ticket=ticketdev.ticket)
+		return super(TicketDevDeleteView, self).delete(request, *args, **kwargs)
+	
+	def test_func(self):
+		if self.request.user.membership.role == 'admin':
+			return True
+		return False
 
 
 

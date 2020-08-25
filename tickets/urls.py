@@ -1,6 +1,11 @@
 from django.urls import path
 from . import views
-from .views import TicketCreateView, TicketUpdateView, TicketDeleteView, CommentCreateView, CommentUpdateView, CommentDeleteView, AttachmentCreateView, AttachmentUpdateView, AttachmentDeleteView
+from .views import (TicketCreateView, 
+    TicketUpdateView, TicketDeleteView, 
+    CommentCreateView, CommentUpdateView, 
+    CommentDeleteView, AttachmentCreateView, 
+    AttachmentUpdateView, AttachmentDeleteView, 
+    TicketDevCreateView, TicketDevDeleteView)
 
 urlpatterns = [
 	path('', views.my_tickets, name='tickets'),
@@ -14,4 +19,6 @@ urlpatterns = [
     path('<int:pk>/attachment/new/', AttachmentCreateView.as_view(), name='attachment-create'),
     path('<int:pk>/attachment/update/', AttachmentUpdateView.as_view(), name='attachment-update'),
     path('<int:pk>/attachment/delete/', AttachmentDeleteView.as_view(), name='attachment-delete'),
+    path('<int:pk>/TicketDev/new/', TicketDevCreateView.as_view(), name='ticketdev-create'),
+    path('<int:pk>/TicketDev/delete/', TicketDevDeleteView.as_view(), name='ticketdev-delete'),
 ]

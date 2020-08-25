@@ -26,6 +26,7 @@ class Ticket(models.Model):
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_updated = models.DateTimeField(auto_now=True)
 	ticket_type = models.CharField(max_length=128)
+	developers = models.ManyToManyField(User, through='TicketDev', related_name='ticket_developers')
 
 	def __str__(self):
 		return self.title
@@ -67,3 +68,14 @@ class History(models.Model):
 
 	def __str__(self):
 		return self.user.username + " " + self.action + " on ticket " + self.ticket.title
+
+class TicketDev(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.user.username + " + " + self.ticket.title
+
+
+
+
