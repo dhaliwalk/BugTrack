@@ -4,7 +4,7 @@ from .models import Project, ProjectMember
 from users.models import Team
 from django.contrib import messages
 from django.views.generic import CreateView, UpdateView, DeleteView
-
+from django.urls import reverse
 
 def list(request):
 	user = request.user
@@ -29,7 +29,7 @@ def ProjectJoin(request, pk=None):
 def ProjectInfo(request, pk=None):
 	if pk:
 		project = Project.objects.get(pk=pk)
-	members = project.members.all().order_by('username')
+	members = ProjectMember.objects.filter(project=project)
 	tickets = project.ticket_set.all().order_by('-date_created')
 	return render(request, 'projects/project_info.html', {'tickets': tickets, 'project':project, 'members': members})
 
@@ -57,6 +57,34 @@ class ProjectDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 	def test_func(self):
 		project = self.get_object()
 		if project in self.request.user.team_set.first().project_set.filter(members=self.request.user):
+			return True
+		return False
+
+class ProjectMemberCreateView(LoginRequiredMixin, CreateView):
+	model = ProjectMember
+	fields = ['user']
+
+	def get_form(self, form_class=None):
+		form = super().get_form(form_class)
+		form.fields['user'].queryset = Team.objects.get(pk=Project.objects.get(pk=self.kwargs['pk']).team.id).members
+		return form
+
+	def get_success_url(self):
+		return reverse('project-info', kwargs={'pk': self.kwargs['pk']})
+	
+	def form_valid(self, form):
+		pk = self.kwargs['pk']
+		form.instance.project = Project.objects.get(pk=pk)
+		return super().form_valid(form)
+
+class ProjectMemberDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
+	model = ProjectMember
+	def get_success_url(self):
+		project = self.get_object().project
+		return reverse('project-info', kwargs={'pk': project.id})
+	
+	def test_func(self):
+		if self.request.user.membership.role == 'admin':
 			return True
 		return False
 
