@@ -188,7 +188,8 @@ class TicketDevCreateView(LoginRequiredMixin, CreateView):
 
 	def get_form(self, form_class=None):
 		form = super().get_form(form_class)
-		form.fields['user'].queryset = Project.objects.get(pk=Ticket.objects.get(pk=self.kwargs['pk']).project.id).members
+		current_ticketdevs_ids = Ticket.objects.get(pk=self.kwargs['pk']).developers.all().values_list('id',flat=True)
+		form.fields['user'].queryset = (Project.objects.get(pk=Ticket.objects.get(pk=self.kwargs['pk']).project.id).members).exclude(id__in=current_ticketdevs_ids)
 		return form
 
 	def get_success_url(self):

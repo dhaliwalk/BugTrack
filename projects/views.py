@@ -66,7 +66,8 @@ class ProjectMemberCreateView(LoginRequiredMixin, CreateView):
 
 	def get_form(self, form_class=None):
 		form = super().get_form(form_class)
-		form.fields['user'].queryset = Team.objects.get(pk=Project.objects.get(pk=self.kwargs['pk']).team.id).members
+		current_projectdevs_ids = Project.objects.get(pk=self.kwargs['pk']).members.all().values_list('id',flat=True)
+		form.fields['user'].queryset = Team.objects.get(pk=Project.objects.get(pk=self.kwargs['pk']).team.id).members.exclude(id__in=current_projectdevs_ids)
 		return form
 
 	def get_success_url(self):
