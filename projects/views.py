@@ -5,6 +5,7 @@ from users.models import Team
 from django.contrib import messages
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 def list(request):
 	user = request.user
@@ -14,7 +15,12 @@ def list(request):
 		projects = team.project_set.all().order_by('name')
 	else:
 		projects = team.project_set.filter(members=user).order_by('name')
-	return render(request, 'projects/project_list.html', {'projects': projects, 'role': role})
+
+	paginator = Paginator(projects, 10)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+	
+	return render(request, 'projects/project_list.html', {'page_obj': page_obj, 'role': role})
 
 def ProjectJoin(request, pk=None):
 	if pk:
@@ -31,7 +37,19 @@ def ProjectInfo(request, pk=None):
 		project = Project.objects.get(pk=pk)
 	members = ProjectMember.objects.filter(project=project)
 	tickets = project.ticket_set.all().order_by('-date_created')
-	return render(request, 'projects/project_info.html', {'tickets': tickets, 'project':project, 'members': members})
+
+	paginator = Paginator(tickets, 5)
+	page_number = request.GET.get('page')
+	page_obj_tickets = paginator.get_page(page_number)
+
+	paginator = Paginator(members, 5)
+	page_number = request.GET.get('page')
+	page_obj_members = paginator.get_page(page_number)
+
+	return render(request, 'projects/project_info.html', 
+		{'project':project,  
+		'page_obj_tickets': page_obj_tickets,
+		'page_obj_members': page_obj_members})
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
 	model = Project

@@ -14,7 +14,7 @@
           </tr>
         </thead>
         <tbody>
-		      {% for ticket in tickets %}
+		      {% for ticket in page_obj_tickets %}
           <tr>
             <td><a href="{% url 'ticket-info' ticket.id %}">{{ ticket.title }}</a></td>
             <td>{{ ticket.description }}</td>
@@ -24,6 +24,22 @@
         </tbody>
       </table>
     </div>
+    {% if page_obj_tickets.has_previous == True or page_obj_tickets.has_next == True %}
+      {% if page_obj_tickets.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+      {% endif %}
+      {% for num in page_obj_tickets.paginator.page_range %}
+        {% if page_obj_tickets.number == num %}
+          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% elif num > page_obj_tickets.number|add:-2 %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj_tickets.has_next %}
+        <a class="btn btn-outline-info mb-4" href="?page={{page_obj_tickets.paginator.num_pages }}">Last</a>
+      {% endif %}
+    {% endif %}
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">Members</h1>
     </div>
@@ -34,14 +50,16 @@
       <table class="table table-striped table-sm">
         <thead>
           <tr>
+            <th></th>
             <th>User Name</th>
             <th>Email</th>
             <th>Role</th>
           </tr>
         </thead>
         <tbody>
-        {% for member in members %}
+        {% for member in page_obj_members %}
           <tr>
+            <td><img width="50" height="50" class="rounded-circle account-img" src="{{ member.user.profile.image.url }}"></td>
             <td>{{ member.user.username }}</td>
             <td>{{ member.user.email }}</td>
             <td>{{ member.user.membership.role }}</td>
@@ -55,5 +73,20 @@
         </tbody>
       </table>
     </div>
-	
+    {% if page_obj_members.has_previous == True or page_obj_members.has_next == True %}
+      {% if page_obj_members.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+      {% endif %}
+      {% for num in page_obj_members.paginator.page_range %}
+        {% if page_obj_members.number == num %}
+          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% elif num > page_obj_members.number|add:-2 %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_obj_members.has_next %}
+        <a class="btn btn-outline-info mb-4" href="?page={{page_obj_members.paginator.num_pages }}">Last</a>
+      {% endif %}
+    {% endif %}
 {% endblock content %}

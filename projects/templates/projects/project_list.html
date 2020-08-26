@@ -13,7 +13,7 @@
             </tr>
           </thead>
           <tbody>
-			      {% for project in projects %}
+			      {% for project in page_obj %}
             <tr>
               <td><a href="{% url 'project-info' project.id%}">{{ project.name }}</a></td>
               <td>{{ project.description }}</td>
@@ -29,5 +29,18 @@
           </tbody>
         </table>
       </div>
+
+      {% if page_obj.has_previous == True or page_obj.has_next == True %}
+      {% if page_obj.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+      {% endif %}
+      <a class="btn btn-info mb-4" href="?page={{ page_obj.number }}">{{ page_obj.number }}</a>
+      {% if page_obj.has_next %}
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
+    {% endif %}
+
 	
 {% endblock content %}

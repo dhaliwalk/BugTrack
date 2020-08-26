@@ -9,6 +9,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from .models import Team, Membership
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 def RegisterUserJoinTeam(request):
 	if request.method == 'POST':
@@ -84,9 +85,13 @@ class TeamCreateView(LoginRequiredMixin, CreateView):
 
 
 def TeamList(request):
-	team = request.user.team_set.first()
+	team = request.user.membership.team
 	members = team.members.all()
-	return render(request, 'users/teaminfo.html', {'teams': team, 'members': members})
+
+	paginator = Paginator(members, 5)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj})
 
 
 def TeamJoin(request):	

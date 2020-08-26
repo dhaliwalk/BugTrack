@@ -4,6 +4,7 @@ from projects.models import Project
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 def TicketInfo(request, pk=None):
 	if pk:
@@ -11,12 +12,31 @@ def TicketInfo(request, pk=None):
 	comments = ticket.comment_set.all().order_by('-date_created')
 	history_list = ticket.history_set.all().order_by('-date_changed')
 	attachments = ticket.attachment_set.all().order_by('-date_created')
-	developers = TicketDev.objects.filter(ticket=ticket)
-	return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
+	developers = TicketDev.objects.filter(ticket=ticket).order_by('-date_added')
+
+	paginator = Paginator(comments, 5)
+	page_number = request.GET.get('page')
+	page_obj_comments = paginator.get_page(page_number)
+
+	paginator = Paginator(history_list, 5)
+	page_number = request.GET.get('page')
+	page_obj_history = paginator.get_page(page_number)
+
+	paginator = Paginator(developers, 5)
+	page_number = request.GET.get('page')
+	page_obj_devs = paginator.get_page(page_number)
+
+	paginator = Paginator(attachments, 5)
+	page_number = request.GET.get('page')
+	page_obj_attachments = paginator.get_page(page_number)
+	return render(request, 'tickets/ticket_info.html', {'page_obj_comments': page_obj_comments, 'ticket':ticket, 'page_obj_history': page_obj_history, 'page_obj_attachments': page_obj_attachments, 'page_obj_devs': page_obj_devs})
 
 def my_tickets(request):
 	tickets = Ticket.objects.filter(submitter=request.user).order_by('-date_updated')
-	return render(request, 'tickets/my_tickets.html', {'tickets':tickets})
+	paginator = Paginator(tickets, 5)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+	return render(request, 'tickets/my_tickets.html', {'page_obj':page_obj})
 
 class TicketCreateView(LoginRequiredMixin, CreateView):
 	model = Ticket
