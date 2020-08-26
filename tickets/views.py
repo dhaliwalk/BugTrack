@@ -213,7 +213,7 @@ class TicketDevDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 		return super(TicketDevDeleteView, self).delete(request, *args, **kwargs)
 	
 	def test_func(self):
-		if self.request.user.membership.role == 'admin':
+		if self.request.user.membership.role == 'Admin':
 			return True
 		return False
 

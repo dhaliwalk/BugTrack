@@ -113,7 +113,7 @@ class MembershipUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 		return reverse('team-list')
 
 	def test_func(self):
-		if self.request.user.membership.role == 'admin':
+		if self.request.user.membership.role == 'Admin':
 			return True
 		return False
 
@@ -124,7 +124,7 @@ class MembershipDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 		return reverse('team-list')
 	
 	def test_func(self):
-		if self.request.user.membership.role == 'admin':
+		if self.request.user.membership.role == 'Admin':
 			return True
 		return False
 

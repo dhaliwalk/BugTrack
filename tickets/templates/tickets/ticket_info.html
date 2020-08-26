@@ -10,7 +10,7 @@
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h3>Developers</h3>
   </div>
-  {% if user.role == admin %}
+  {% if user.role == Admin %}
     <a href="{% url 'ticketdev-create' ticket.id %}" class="btn btn-info btn-lg active mb-3" role="button" aria-pressed="true">Add a Developer</a>
   {% endif %}
   <div class="table-responsive">
@@ -30,7 +30,7 @@
           <td>{{ developer.user.email }}</td>
           <td>{{ developer.user.membership.role }}</td>
           <td>{{ developer.date_added }}</td>
-          {% if user.role == admin %}
+          {% if user.role == Admin %}
             <td>
                 <a href="{% url 'ticketdev-delete' developer.id %}" class="btn btn-danger btn-sm mt-1 mb-1">Delete</a>
             </td>    
@@ -100,7 +100,7 @@
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h3>Attachments</h3>
   </div>
-  {% if user.role == admin or user.role == developer %}
+  {% if user.role == Admin or user.role == Developer %}
     <a href="{% url 'attachment-create' ticket.id %}" class="btn btn-info btn-lg active mb-3" role="button" aria-pressed="true">Add an Attachment</a>
   {% endif %}
 	<div class="table-responsive">

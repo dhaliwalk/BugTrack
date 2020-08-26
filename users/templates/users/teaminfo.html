@@ -19,7 +19,7 @@
           <td>{{ member.username }}</td>
           <td>{{ member.email }}</td>
           <td>{{ member.membership.role }}</td>
-          {% if user.role == admin %}
+          {% if user.role == Admin %}
               <td>
                 <a href="{% url 'membership-update' member.membership.id %}" class="btn btn-secondary btn-sm mt-1 mb-1">Update Role</a>
                 <a href="{% url 'membership-delete' member.membership.id %}" class="btn btn-danger btn-sm mt-1 mb-1">Delete</a>

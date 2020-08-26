@@ -10,7 +10,7 @@ def list(request):
 	user = request.user
 	role = user.membership.role
 	team = user.membership.team
-	if role == 'admin':
+	if role == 'Admin':
 		projects = team.project_set.all().order_by('name')
 	else:
 		projects = team.project_set.filter(members=user).order_by('name')
@@ -85,7 +85,7 @@ class ProjectMemberDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteVie
 		return reverse('project-info', kwargs={'pk': project.id})
 	
 	def test_func(self):
-		if self.request.user.membership.role == 'admin':
+		if self.request.user.membership.role == 'Admin':
 			return True
 		return False
 
