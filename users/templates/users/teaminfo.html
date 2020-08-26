@@ -1,7 +1,7 @@
 {% extends "main/base.html" %}
 {% block content %}
 	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-	<h1 class="h2">Hi{{ team.name }}</h1>	
+	<h1 class="h2">{{ team.name }} Page</h1>	
     </div>
 	<h2>Members</h2>
 	<div class="table-responsive">
@@ -19,6 +19,12 @@
           <td>{{ member.username }}</td>
           <td>{{ member.email }}</td>
           <td>{{ member.membership.role }}</td>
+          {% if user.role == admin %}
+              <td>
+                <a href="{% url 'membership-update' member.membership.id %}" class="btn btn-secondary btn-sm mt-1 mb-1">Update Role</a>
+                <a href="{% url 'membership-delete' member.membership.id %}" class="btn btn-danger btn-sm mt-1 mb-1">Delete</a>
+              </td>
+          {% endif %}
         </tr>
       {% endfor %}
       </tbody>

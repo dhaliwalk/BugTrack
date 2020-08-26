@@ -5,8 +5,10 @@ from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, TeamJoinForm, TeamCreateForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView, DeleteView
 from .models import Team, Membership
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.urls import reverse
 
 def RegisterUserJoinTeam(request):
 	if request.method == 'POST':
@@ -102,5 +104,28 @@ def TeamJoin(request):
 				messages.warning(request, 'Invalid Pin')
 
 	return render(request, 'users/teamjoin.html')
+
+class MembershipUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
+	model = Membership
+	fields = ['role']
+
+	def get_success_url(self):
+		return reverse('team-list')
+
+	def test_func(self):
+		if self.request.user.membership.role == 'admin':
+			return True
+		return False
+
+class MembershipDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
+	model = Membership
+
+	def get_success_url(self):
+		return reverse('team-list')
+	
+	def test_func(self):
+		if self.request.user.membership.role == 'admin':
+			return True
+		return False
 
 

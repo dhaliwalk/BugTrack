@@ -45,9 +45,11 @@
             <td>{{ member.user.username }}</td>
             <td>{{ member.user.email }}</td>
             <td>{{ member.user.membership.role }}</td>
-            <td>
-              <a href="{% url 'projectmember-delete' member.id %}" class="btn btn-danger btn-sm mt-1 mb-1">Delete</a>
-            </td>
+            {% if user.role == admin %}
+              <td>
+                <a href="{% url 'projectmember-delete' member.id %}" class="btn btn-danger btn-sm mt-1 mb-1">Delete</a>
+              </td>
+            {% endif %}
           </tr>
         {% endfor %}
         </tbody>
