@@ -10,7 +10,9 @@ from .models import Team, Membership
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.core.paginator import Paginator
+from .decorators import unauthenticated_user
 
+@unauthenticated_user
 def RegisterUserJoinTeam(request):
 	if request.method == 'POST':
 		form = UserRegisterForm(request.POST)
@@ -36,6 +38,7 @@ def RegisterUserJoinTeam(request):
 		form_t = TeamJoinForm()
 	return render(request, 'users/register_join.html', {'form': form, 'form_t': form_t})
 
+@unauthenticated_user
 def RegisterUserCreateTeam(request):
 	if request.method == 'POST':
 		form = UserRegisterForm(request.POST)
@@ -79,9 +82,9 @@ def profile(request):
 	return render(request, 'users/profile.html', context)
 
 
-class TeamCreateView(LoginRequiredMixin, CreateView):
-	model = Team
-	fields = ['name', 'pin']
+# class TeamCreateView(LoginRequiredMixin, CreateView):
+# 	model = Team
+# 	fields = ['name', 'pin']
 
 
 def TeamList(request):
@@ -94,21 +97,21 @@ def TeamList(request):
 	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj})
 
 
-def TeamJoin(request):	
-	if request.method == 'POST':
-		if Team.objects.filter(name=request.POST.get('team_name')).count() == 0:
-			messages.warning(request, 'Invalid Team Name')
-		else:
-			team = Team.objects.get(name=request.POST.get('team_name'))
-			if int(request.POST.get('pin')) == int(team.pin):
-				instance = Membership(user=request.user, team=team)
-				instance.save()
-				messages.success(request, 'Team Joined')
-				return redirect('home')
-			else:
-				messages.warning(request, 'Invalid Pin')
+# def TeamJoin(request):	
+# 	if request.method == 'POST':
+# 		if Team.objects.filter(name=request.POST.get('team_name')).count() == 0:
+# 			messages.warning(request, 'Invalid Team Name')
+# 		else:
+# 			team = Team.objects.get(name=request.POST.get('team_name'))
+# 			if int(request.POST.get('pin')) == int(team.pin):
+# 				instance = Membership(user=request.user, team=team)
+# 				instance.save()
+# 				messages.success(request, 'Team Joined')
+# 				return redirect('home')
+# 			else:
+# 				messages.warning(request, 'Invalid Pin')
 
-	return render(request, 'users/teamjoin.html')
+# 	return render(request, 'users/teamjoin.html')
 
 class MembershipUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Membership
@@ -119,7 +122,10 @@ class MembershipUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 
 	def test_func(self):
 		if self.request.user.membership.role == 'Admin':
-			return True
+			team = self.get_object().team
+			if self.request.user.membership.team == team:
+				return True
+			return False
 		return False
 
 class MembershipDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
@@ -130,7 +136,10 @@ class MembershipDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 	
 	def test_func(self):
 		if self.request.user.membership.role == 'Admin':
-			return True
+			team = self.get_object().team
+			if self.request.user.membership.team == team:
+				return True
+			return False
 		return False
 
 

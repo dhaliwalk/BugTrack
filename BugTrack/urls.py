@@ -19,7 +19,6 @@ from django.urls import path, include
 from users import views as user_views
 from django.conf import settings
 from django.conf.urls.static import static
-from users.views import TeamCreateView
 
 urlpatterns = [
     path('', include('main.urls')),
@@ -32,7 +31,7 @@ urlpatterns = [
     path('team/', include('users.urls')),
     path('project/', include('projects.urls')),
     path('ticket/', include('tickets.urls')),
-    path('team/new/', TeamCreateView.as_view(), name='team-create'),
+    # path('team/new/', TeamCreateView.as_view(), name='team-create'),
 ]
 
 if settings.DEBUG:

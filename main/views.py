@@ -8,5 +8,3 @@ def home(request):
 	else:
 		return RegisterUserJoinTeam(request)
 	
-
-
