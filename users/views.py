@@ -90,11 +90,13 @@ def profile(request):
 def TeamList(request):
 	team = request.user.membership.team
 	members = team.members.all()
+	projects = team.project_set.all()
 
 	paginator = Paginator(members, 5)
 	page_number = request.GET.get('page')
 	page_obj = paginator.get_page(page_number)
-	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj})
+
+	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj, 'projects': projects})
 
 
 # def TeamJoin(request):	

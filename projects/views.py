@@ -7,6 +7,8 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.http import HttpResponse
+from .forms import TicketCreateForm
+from django.http import HttpResponse
 
 def list(request):
 	user = request.user
@@ -34,34 +36,43 @@ def list(request):
 # 	return render(request, 'projects/project_join.html', {'project': project})
 
 def ProjectInfo(request, pk=None):
-	if pk:
-		project = Project.objects.get(pk=pk)
-	members = ProjectMember.objects.filter(project=project)
-	tickets = project.ticket_set.all().order_by('-date_created')
 
-	paginator = Paginator(tickets, 5)
-	page_number = request.GET.get('page')
-	page_obj_tickets = paginator.get_page(page_number)
-
-	paginator = Paginator(members, 5)
-	page_number = request.GET.get('page')
-	page_obj_members = paginator.get_page(page_number)
+	if request.method == 'POST':
+		if pk:
+			project = Project.objects.get(pk=pk)
+		members = ProjectMember.objects.filter(project=project)
+		tickets = project.ticket_set.all().order_by('-date_created')
+		form = TicketCreateForm(request.POST)
+		if form.is_valid():
+			form.instance.submitter = request.user
+			form.instance.project = project 
+			form.save()
+			return render(request, 'projects/project_info.html', 
+			{'form': form, 'project':project,  
+			'tickets': tickets,
+			'members': members})
+	else:
+		form = TicketCreateForm()
+		if pk:
+			project = Project.objects.get(pk=pk)
+		members = ProjectMember.objects.filter(project=project)
+		tickets = project.ticket_set.all().order_by('-date_created')
 
 	if request.user.project_set.filter(pk=project.id).exists() or (request.user.membership.team.project_set.filter(pk=project.id).exists() and request.user.membership.role == 'Admin'):
 		return render(request, 'projects/project_info.html', 
-			{'project':project,  
-			'page_obj_tickets': page_obj_tickets,
-			'page_obj_members': page_obj_members})
+			{'form': form, 'project':project,  
+			'tickets': tickets,
+			'members': members})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 
-class ProjectCreateView(LoginRequiredMixin, CreateView):
-	model = Project
-	fields = ['name', 'description']
+# class ProjectCreateView(LoginRequiredMixin, CreateView):
+# 	model = Project
+# 	fields = ['name', 'description']
 
-	def form_valid(self, form):
-		form.instance.team = self.request.user.team_set.first()
-		return super().form_valid(form)
+# 	def form_valid(self, form):
+# 		form.instance.team = self.request.user.team_set.first()
+# 		return super().form_valid(form)
 
 class ProjectUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Project

@@ -11,6 +11,7 @@ class Profile(models.Model):
 
 class Team(models.Model):
     name = models.CharField(max_length=128, unique=True)
+    description = models.CharField(max_length=500)
     pin = models.IntegerField()
     members = models.ManyToManyField(User, through='Membership')
 

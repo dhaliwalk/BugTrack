@@ -15,23 +15,23 @@ def TicketInfo(request, pk=None):
 	attachments = ticket.attachment_set.all().order_by('-date_created')
 	developers = TicketDev.objects.filter(ticket=ticket).order_by('-date_added')
 
-	paginator = Paginator(comments, 5)
-	page_number = request.GET.get('page')
-	page_obj_comments = paginator.get_page(page_number)
+	# paginator = Paginator(comments, 5)
+	# page_number = request.GET.get('page')
+	# page_obj_comments = paginator.get_page(page_number)
 
-	paginator = Paginator(history_list, 5)
-	page_number = request.GET.get('page')
-	page_obj_history = paginator.get_page(page_number)
+	# paginator = Paginator(history_list, 5)
+	# page_number = request.GET.get('page')
+	# page_obj_history = paginator.get_page(page_number)
 
-	paginator = Paginator(developers, 5)
-	page_number = request.GET.get('page')
-	page_obj_devs = paginator.get_page(page_number)
+	# paginator = Paginator(developers, 5)
+	# page_number = request.GET.get('page')
+	# page_obj_devs = paginator.get_page(page_number)
 
-	paginator = Paginator(attachments, 5)
-	page_number = request.GET.get('page')
-	page_obj_attachments = paginator.get_page(page_number)
+	# paginator = Paginator(attachments, 5)
+	# page_number = request.GET.get('page')
+	# page_obj_attachments = paginator.get_page(page_number)
 	if request.user.membership.team.project_set.filter(pk=ticket.project.id).exists():
-		return render(request, 'tickets/ticket_info.html', {'page_obj_comments': page_obj_comments, 'ticket':ticket, 'page_obj_history': page_obj_history, 'page_obj_attachments': page_obj_attachments, 'page_obj_devs': page_obj_devs})
+		return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 
@@ -54,7 +54,7 @@ class TicketCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 		project = Project.objects.get(pk=self.kwargs['pk'])
 		form.instance.project = project
 		form.instance.submitter = self.request.user
-		History.objects.create(user=self.request.user, action="Created Ticket", old_value=' ', new_value=form.instance.title)
+		History.objects.create(user=self.request.user, action="Created Ticket", old_value=' ', new_value=form.instance.title, icon_type='library_add')
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -80,7 +80,7 @@ class TicketUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 				if value == newval:
 					continue
 				else:
-					History.objects.create(user=self.request.user, action=f"Updated {field} field", old_value=value, new_value=newval, ticket=self.get_object())
+					History.objects.create(user=self.request.user, action=f"Updated {field} field", old_value=value, new_value=newval, ticket=self.get_object(), icon_type='update')
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -113,7 +113,7 @@ class CommentCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 		pk = self.kwargs['pk']
 		form.instance.ticket = Ticket.objects.get(pk=pk)
 		form.instance.author = self.request.user
-		History.objects.create(user=self.request.user, action=f"Created comment", old_value="", new_value=form.instance.message, ticket=form.instance.ticket)
+		History.objects.create(user=self.request.user, action=f"Created comment", old_value="", new_value=form.instance.message, ticket=form.instance.ticket, icon_type='add_comment')
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -134,7 +134,7 @@ class CommentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	def form_valid(self, form):
 		form.instance.submitter = self.request.user
 		old_comment = Comment.objects.get(pk=self.kwargs['pk']).__dict__
-		History.objects.create(user=self.request.user, action=f"Updated Comment", old_value=old_comment['message'], new_value=form.instance.message, ticket=self.get_object().ticket)
+		History.objects.create(user=self.request.user, action=f"Updated Comment", old_value=old_comment['message'], new_value=form.instance.message, ticket=self.get_object().ticket, icon_type='comment')
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -152,7 +152,7 @@ class CommentDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 
 	def delete(self, request, *args, **kwargs):
 		comment = self.get_object()
-		History.objects.create(user=self.request.user, action=f"Deleted comment '{comment.message}'", old_value=comment.message, new_value='', ticket=comment.ticket)
+		History.objects.create(user=self.request.user, action=f"Deleted comment '{comment.message}'", old_value=comment.message, new_value='', ticket=comment.ticket, icon_type='delete')
 		return super(CommentDeleteView, self).delete(request, *args, **kwargs)
 	
 	def test_func(self):
@@ -172,7 +172,7 @@ class AttachmentCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 		pk = self.kwargs['pk']
 		form.instance.ticket = Ticket.objects.get(pk=pk)
 		form.instance.poster = self.request.user
-		History.objects.create(user=self.request.user, action=f"Added Attachment", old_value="", new_value=form.instance.title, ticket=form.instance.ticket)
+		History.objects.create(user=self.request.user, action=f"Added Attachment", old_value="", new_value=form.instance.title, ticket=form.instance.ticket, icon_type='library_add')
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -197,7 +197,7 @@ class AttachmentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 				if value == newval:
 					continue
 				else:
-					History.objects.create(user=self.request.user, action=f"Updated {field} field on attachment", old_value=value, new_value=newval, ticket=self.get_object().ticket)
+					History.objects.create(user=self.request.user, action=f"Updated {field} field on attachment", old_value=value, new_value=newval, ticket=self.get_object().ticket, icon_type='update')
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -216,7 +216,7 @@ class AttachmentDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 
 	def delete(self, request, *args, **kwargs):
 		attachment = self.get_object()
-		History.objects.create(user=self.request.user, action=f"Deleted attachment '{attachment.title}'", old_value=attachment.title, new_value='', ticket=attachment.ticket)
+		History.objects.create(user=self.request.user, action=f"Deleted attachment '{attachment.title}'", old_value=attachment.title, new_value='', ticket=attachment.ticket, icon_type='delete')
 		return super(AttachmentDeleteView, self).delete(request, *args, **kwargs)
 	
 	def test_func(self):
@@ -241,7 +241,7 @@ class TicketDevCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 	def form_valid(self, form):
 		pk = self.kwargs['pk']
 		form.instance.ticket = Ticket.objects.get(pk=pk)
-		History.objects.create(user=self.request.user, action=f"Added Developer", old_value="", new_value=form.instance.user.username, ticket=form.instance.ticket)
+		History.objects.create(user=self.request.user, action=f"Added Developer", old_value="", new_value=form.instance.user.username, ticket=form.instance.ticket, icon_type='person_add')
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -258,7 +258,7 @@ class TicketDevDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 
 	def delete(self, request, *args, **kwargs):
 		ticketdev = self.get_object()
-		History.objects.create(user=self.request.user, action=f"Removed developer '{ticketdev.user.username}'", old_value=ticketdev.user.username, new_value='', ticket=ticketdev.ticket)
+		History.objects.create(user=self.request.user, action=f"Removed developer '{ticketdev.user.username}'", old_value=ticketdev.user.username, new_value='', ticket=ticketdev.ticket, icon_type='person_remove')
 		return super(TicketDevDeleteView, self).delete(request, *args, **kwargs)
 	
 	def test_func(self):

@@ -65,9 +65,10 @@ class History(models.Model):
 	old_value = models.CharField(max_length=128)
 	new_value = models.CharField(max_length=128)
 	date_changed = models.DateTimeField(auto_now_add=True)
+	icon_type = models.CharField(max_length=200)
 
 	def __str__(self):
-		return self.user.username + " " + self.action + " on ticket " + self.ticket.title
+		return self.user.username + " " + self.action 
 
 class TicketDev(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
