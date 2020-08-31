@@ -7,7 +7,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.http import HttpResponse
-from .forms import TicketCreateForm
+from .forms import TicketCreateForm, ProjectUpdateForm, ProjectMemberCreateForm
 from django.http import HttpResponse
 
 def list(request):
@@ -36,31 +36,59 @@ def list(request):
 # 	return render(request, 'projects/project_join.html', {'project': project})
 
 def ProjectInfo(request, pk=None):
-
-	if request.method == 'POST':
-		if pk:
-			project = Project.objects.get(pk=pk)
-		members = ProjectMember.objects.filter(project=project)
-		tickets = project.ticket_set.all().order_by('-date_created')
+	if pk:
+		project = Project.objects.get(pk=pk)
+	members = ProjectMember.objects.filter(project=project)
+	tickets = project.ticket_set.all().order_by('-date_created')
+	if request.method == 'POST' and 'ticket_form' in request.POST:
 		form = TicketCreateForm(request.POST)
+		u_form = ProjectUpdateForm(instance=project)
+		member_form = ProjectMemberCreateForm()
+		current_projectdevs_ids = Project.objects.get(pk=project.id).members.all().values_list('id',flat=True)
+		member_form.fields['user'].queryset = Team.objects.get(pk=project.team.id).members.exclude(id__in=current_projectdevs_ids)
 		if form.is_valid():
 			form.instance.submitter = request.user
 			form.instance.project = project 
 			form.save()
 			return render(request, 'projects/project_info.html', 
-			{'form': form, 'project':project,  
+			{'member_form': member_form, 'u_form': u_form, 'form': form, 'project':project,  
+			'tickets': tickets,
+			'members': members})
+	elif request.method == 'POST' and 'update_form' in request.POST:
+		u_form = ProjectUpdateForm(request.POST, instance=project)
+		form = TicketCreateForm()
+		member_form = ProjectMemberCreateForm()
+		current_projectdevs_ids = Project.objects.get(pk=project.id).members.all().values_list('id',flat=True)
+		member_form.fields['user'].queryset = Team.objects.get(pk=project.team.id).members.exclude(id__in=current_projectdevs_ids)
+		if u_form.is_valid():
+			u_form.save()
+			return render(request, 'projects/project_info.html', 
+			{'member_form': member_form,'u_form': u_form, 'form': form, 'project':project,  
+			'tickets': tickets,
+			'members': members})
+	elif request.method == 'POST' and 'member_submit' in request.POST:
+		u_form = ProjectUpdateForm(instance=project)
+		form = TicketCreateForm()
+		member_form = ProjectMemberCreateForm(request.POST)
+		current_projectdevs_ids = Project.objects.get(pk=project.id).members.all().values_list('id',flat=True)
+		member_form.fields['user'].queryset = Team.objects.get(pk=project.team.id).members.exclude(id__in=current_projectdevs_ids)
+		if member_form.is_valid():
+			member_form.instance.project = project
+			member_form.save()
+			return render(request, 'projects/project_info.html', 
+			{'member_form': member_form,'u_form': u_form, 'form': form, 'project':project,  
 			'tickets': tickets,
 			'members': members})
 	else:
 		form = TicketCreateForm()
-		if pk:
-			project = Project.objects.get(pk=pk)
-		members = ProjectMember.objects.filter(project=project)
-		tickets = project.ticket_set.all().order_by('-date_created')
+		u_form = ProjectUpdateForm(instance=project)
+		member_form = ProjectMemberCreateForm()
+		current_projectdevs_ids = Project.objects.get(pk=project.id).members.all().values_list('id',flat=True)
+		member_form.fields['user'].queryset = Team.objects.get(pk=project.team.id).members.exclude(id__in=current_projectdevs_ids)
 
 	if request.user.project_set.filter(pk=project.id).exists() or (request.user.membership.team.project_set.filter(pk=project.id).exists() and request.user.membership.role == 'Admin'):
 		return render(request, 'projects/project_info.html', 
-			{'form': form, 'project':project,  
+			{'member_form': member_form,'u_form': u_form, 'form': form, 'project':project,  
 			'tickets': tickets,
 			'members': members})
 	else:
@@ -91,7 +119,7 @@ class ProjectDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 	model = Project
 
 	def get_success_url(self):
-		return reverse('project-list')
+		return reverse('team-list')
 	
 	def test_func(self):
 		project = self.get_object()

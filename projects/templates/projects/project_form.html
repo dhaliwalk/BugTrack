@@ -1,17 +1,41 @@
-{% extends "main/base.html" %}
+{% extends "main/index.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-	<div class="content-section">
-		<form method="POST" enctype="multipart/form-data">
-			{% csrf_token %}
-			<fieldset class="form-group">
-				<legend class="border-bottom mb-4">Project</legend>
-				{{ form|crispy }}
-			</fieldset>
-			<div class="form-group">
-				<button class="btn btn-outline-info" type="submit">Post</button>
-			</div>
-		</form>
 
-	</div>
+	<div class="main-container">
+
+        <div class="navbar bg-white breadcrumb-bar">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item"><a href="{% url 'team-list' %}">Team</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">Update Project</li>
+            </ol>
+          </nav>
+        </div>
+
+	<div class="main-container fullscreen">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-5 col-lg-6 col-md-7">
+          <div class="text-center">
+            <h1 class="h2">Edit Project</h1>
+            <form method="POST">
+            	{% csrf_token %}
+              <div class="form-group">
+                {{ form|crispy }}
+              </div>
+
+              <button class="btn btn-lg btn-block btn-primary" role="button" type="submit">
+                Update Project
+              </button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
