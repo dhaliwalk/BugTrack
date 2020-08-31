@@ -1,9 +1,36 @@
-{% extends "main/base.html" %}
+{% extends "main/index.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
-	<h2>You have been logged out</h2>
-	<div class="border-top pt-3">
-		<small class="text-muted">
-			<a href="{% url 'login' %}">Log in Again</a>
-		</small>
+
+	<div class="navbar bg-white breadcrumb-bar">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Logout</li>
+        </ol>
+      </nav>
 	</div>
+
+	<div class="main-container fullscreen">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-5 col-lg-6 col-md-7">
+          <div class="text-center">
+            <h1 class="h2">You Have Been logged out</h1>
+            <p class="lead">Log in to your account to continue</p>
+            <form method="POST">
+            	{% csrf_token %}
+              <div class="form-group">
+                {{ form|crispy }}
+              </div>
+              <button class="btn btn-lg btn-block btn-primary" role="button" type="submit">
+                <a class="text-white"href="{% url 'login' %}">Log in again</a>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}

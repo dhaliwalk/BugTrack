@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, TeamJoinForm, TeamCreateForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, TeamJoinForm, TeamCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -42,7 +42,7 @@ def RegisterUserJoinTeam(request):
 def RegisterUserCreateTeam(request):
 	if request.method == 'POST':
 		form = UserRegisterForm(request.POST)
-		form_t = TeamCreateForm(request.POST)
+		form_t = TeamCreationForm(request.POST)
 		if form.is_valid() and form_t.is_valid():
 			form.save()
 			form_t.save()
@@ -56,7 +56,7 @@ def RegisterUserCreateTeam(request):
 			messages.warning(request, 'Fields are Invalid')
 	else:
 		form = UserRegisterForm()
-		form_t = TeamJoinForm()
+		form_t = TeamCreationForm()
 	return render(request, 'users/register_create.html', {'form': form, 'form_t': form_t})
 
 
@@ -125,6 +125,8 @@ class MembershipUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	def test_func(self):
 		if self.request.user.membership.role == 'Admin':
 			team = self.get_object().team
+			print(team)
+			print(self.request.user.membership.team)
 			if self.request.user.membership.team == team:
 				return True
 			return False

@@ -23,10 +23,10 @@ class ProfileUpdateForm(forms.ModelForm):
 		model = Profile
 		fields =  ['image']
 
-class TeamCreateForm(forms.ModelForm):
+class TeamCreationForm(forms.ModelForm):
 	class Meta:
 		model = Team
-		fields =  ['name', 'pin']
+		fields =  ['name', 'description', 'pin']
 
 class TeamJoinForm(forms.Form):
 	team_name = forms.CharField(max_length=128)
