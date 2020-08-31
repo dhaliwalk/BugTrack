@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, TeamJoinForm, TeamCreationForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, TeamJoinForm, TeamCreationForm, ProjectCreateForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -95,8 +95,17 @@ def TeamList(request):
 	paginator = Paginator(members, 5)
 	page_number = request.GET.get('page')
 	page_obj = paginator.get_page(page_number)
+	if request.method == 'POST':
+		form = ProjectCreateForm(request.POST)
+		if form.is_valid():
+			form.instance.team = request.user.membership.team
+			form.save()
+			return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj, 'projects': projects, 'form': form})
+	else:
+		form = ProjectCreateForm()
+	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj, 'projects': projects, 'form': form})
+	
 
-	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj, 'projects': projects})
 
 
 # def TeamJoin(request):	
