@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.core.paginator import Paginator
 from .decorators import unauthenticated_user
-
+from django.http import HttpResponseRedirect
 @unauthenticated_user
 def RegisterUserJoinTeam(request):
 	if request.method == 'POST':
@@ -100,7 +100,7 @@ def TeamList(request):
 		if form.is_valid():
 			form.instance.team = request.user.membership.team
 			form.save()
-			return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj, 'projects': projects, 'form': form})
+			return HttpResponseRedirect(reverse('team-list'))
 	else:
 		form = ProjectCreateForm()
 	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj, 'projects': projects, 'form': form})

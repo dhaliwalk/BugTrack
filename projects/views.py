@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from .forms import TicketCreateForm, ProjectUpdateForm, ProjectMemberCreateForm
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 def list(request):
 	user = request.user
@@ -50,10 +50,7 @@ def ProjectInfo(request, pk=None):
 			form.instance.submitter = request.user
 			form.instance.project = project 
 			form.save()
-			return render(request, 'projects/project_info.html', 
-			{'member_form': member_form, 'u_form': u_form, 'form': form, 'project':project,  
-			'tickets': tickets,
-			'members': members})
+			return HttpResponseRedirect(reverse('project-info', kwargs={'pk': project.id}))
 	elif request.method == 'POST' and 'update_form' in request.POST:
 		u_form = ProjectUpdateForm(request.POST, instance=project)
 		form = TicketCreateForm()
@@ -62,10 +59,7 @@ def ProjectInfo(request, pk=None):
 		member_form.fields['user'].queryset = Team.objects.get(pk=project.team.id).members.exclude(id__in=current_projectdevs_ids)
 		if u_form.is_valid():
 			u_form.save()
-			return render(request, 'projects/project_info.html', 
-			{'member_form': member_form,'u_form': u_form, 'form': form, 'project':project,  
-			'tickets': tickets,
-			'members': members})
+			return HttpResponseRedirect(reverse('project-info', kwargs={'pk': project.id}))
 	elif request.method == 'POST' and 'member_submit' in request.POST:
 		u_form = ProjectUpdateForm(instance=project)
 		form = TicketCreateForm()
@@ -75,10 +69,7 @@ def ProjectInfo(request, pk=None):
 		if member_form.is_valid():
 			member_form.instance.project = project
 			member_form.save()
-			return render(request, 'projects/project_info.html', 
-			{'member_form': member_form,'u_form': u_form, 'form': form, 'project':project,  
-			'tickets': tickets,
-			'members': members})
+			return HttpResponseRedirect(reverse('project-info', kwargs={'pk': project.id}))
 	else:
 		form = TicketCreateForm()
 		u_form = ProjectUpdateForm(instance=project)

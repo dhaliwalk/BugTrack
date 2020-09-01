@@ -5,8 +5,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse
 from django.core.paginator import Paginator
-from django.http import HttpResponse
-from .forms import TicketUpdateForm
+from django.http import HttpResponse, HttpResponseRedirect
+from .forms import TicketUpdateForm, TicketDevCreateForm
 
 def TicketInfo(request, pk=None):
 	if pk:
@@ -30,15 +30,31 @@ def TicketInfo(request, pk=None):
 	# paginator = Paginator(attachments, 5)
 	# page_number = request.GET.get('page')
 	# page_obj_attachments = paginator.get_page(page_number)
-	if request.method == 'POST':
+	if request.method == 'POST' and 'ticket_edit' in request.POST:
 		form = TicketUpdateForm(request.POST, instance=ticket)
+		u_form = TicketDevCreateForm()
+		current_ticketdevs_ids = ticket.developers.all().values_list('id',flat=True)
+		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
 		if form.is_valid():
 			form.save()
-			return render(request, 'tickets/ticket_info.html', {'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
+			return HttpResponseRedirect(reverse('ticket-info', kwargs={'pk': ticket.id}))
+	if request.method == 'POST' and 'user_add' in request.POST:
+		form = TicketUpdateForm(instance=ticket)
+		u_form = TicketDevCreateForm(request.POST)
+		current_ticketdevs_ids = ticket.developers.all().values_list('id',flat=True)
+		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
+		if u_form.is_valid():
+			u_form.instance.ticket = ticket
+			u_form.save()
+			return HttpResponseRedirect(reverse('ticket-info', kwargs={'pk': ticket.id}))
 	else:
 		form = TicketUpdateForm(instance=ticket)
+		u_form = TicketDevCreateForm()
+		current_ticketdevs_ids = ticket.developers.all().values_list('id',flat=True)
+		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
+
 	if request.user.membership.team.project_set.filter(pk=ticket.project.id).exists():
-		return render(request, 'tickets/ticket_info.html', {'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
+		return render(request, 'tickets/ticket_info.html', {'u_form':u_form, 'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 
