@@ -15,8 +15,6 @@ def TicketInfo(request, pk=None):
 	history_list = ticket.history_set.all().order_by('-date_changed')
 	attachments = ticket.attachment_set.all().order_by('-date_created')
 	developers = TicketDev.objects.filter(ticket=ticket).order_by('-date_added')
-
-	form = TicketUpdateForm(instance=ticket)
 	# paginator = Paginator(comments, 5)
 	# page_number = request.GET.get('page')
 	# page_obj_comments = paginator.get_page(page_number)
@@ -32,6 +30,13 @@ def TicketInfo(request, pk=None):
 	# paginator = Paginator(attachments, 5)
 	# page_number = request.GET.get('page')
 	# page_obj_attachments = paginator.get_page(page_number)
+	if request.method == 'POST':
+		form = TicketUpdateForm(request.POST, instance=ticket)
+		if form.is_valid():
+			form.save()
+			return render(request, 'tickets/ticket_info.html', {'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
+	else:
+		form = TicketUpdateForm(instance=ticket)
 	if request.user.membership.team.project_set.filter(pk=ticket.project.id).exists():
 		return render(request, 'tickets/ticket_info.html', {'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
 	else:
