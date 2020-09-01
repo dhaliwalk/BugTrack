@@ -1,5 +1,5 @@
 {% extends "main/index.html" %}
-{% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
       <div class="main-container">
 
@@ -36,6 +36,20 @@
               <div class="page-header">
                 <h1>{{ ticket.title }}</h1>
                 <p class="lead">{{ ticket.description }}</p>
+                <div class="form-group row align-items-center">
+                  <label class="col">Priority:</label>
+                  <div class="col">
+                    <span class="h6" data-filter-by="text">{{ ticket.priority }}</span>
+                  </div>
+                  <label class="col">Status:</label>
+                  <div class="col">
+                    <span class="h6" data-filter-by="text">{{ ticket.status }}</span>
+                  </div>
+                  <label class="col">Ticket Type:</label>
+                  <div class="col">
+                    <span class="h6" data-filter-by="text">{{ ticket.ticket_type }}</span>
+                  </div>
+                </div>
                 <div class="d-flex align-items-center">
                   <ul class="avatars">
                     {% for developer in developers %}
@@ -55,7 +69,7 @@
               </div>
               <ul class="nav nav-tabs nav-fill" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link active" data-toggle="tab" href="#ticketinfo" role="tab" aria-controls="ticketinfo" aria-selected="true">Ticket Info</a>
+                  <a class="nav-link active" data-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="true">Comments</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" data-toggle="tab" href="#files" role="tab" aria-controls="files" aria-selected="false">Files</a>
@@ -69,72 +83,55 @@
               </ul>
               <div class="tab-content">
                 <div class="tab-pane fade show active" id="ticketinfo" role="tabpanel" data-filter-list="card-list-body">
-                  <div class="row content-list-head">
-                    <div class="col-auto">
-                      <h3>Ticket Info</h3>
-                      <button class="btn btn-round" data-toggle="modal" data-target="#task-add-modal">
-                        <i class="material-icons">add</i>
-                      </button>
-                    </div>
-                    
-                  </div>
                   <!--end of content list head-->
-                  <div class="col-xl-8 col-lg-9">
-                    <div class="card">
-                      <div class="card-body">
-                        <div class="tab-content">
-                          <div class="tab-pane fade show active" role="tabpanel" id="profile">
-                            <div class="media ">
-                              
-                              <div class="media-body ml-3">
-                                <div class="custom-file custom-file-naked d-block ">
-                                  <input type="file" class="custom-file-input d-none" id="avatar-file">
-                                  <label class="custom-file-label position-relative" for="avatar-file">
-                                  </label>
-                                </div>
-                                
+                  <div class="content-list" data-filter-list="content-list-body">
+                    <div class="row content-list-head">
+                      <div class="col-auto">
+                        <h3>Comments</h3>
+                        <button class="btn btn-round" data-toggle="modal" data-target="#note-add-modal">
+                          <i class="material-icons">add</i>
+                        </button>
+                      </div>
+                      <form class="col-md-auto">
+                        <div class="input-group input-group-round">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">
+                              <i class="material-icons">filter_list</i>
+                            </span>
+                          </div>
+                          <input type="search" class="form-control filter-list-input" placeholder="Filter Comments" aria-label="Filter notes">
+                        </div>
+                      </form>
+                    </div>
+                    <!--end of content list head-->
+                    <div class="content-list-body">
+                      {% for comment in comments %}
+                      <div class="card card-note">
+                        <div class="card-header">
+                          <div class="media align-items-center">
+                            <img alt="{{ comment.author.username }}" src="{{ comment.author.profile.image.url }}" class="avatar" data-toggle="tooltip" data-title="{{ comment.author.username }}" data-filter-by="alt" />
+                            <div class="media-body">
+                              <h6 class="mb-0" data-filter-by="text">{{ comment.subject}}</h6>
+                            </div>
+                          </div>
+                          <div class="d-flex align-items-center">
+                            <span data-filter-by="text">{{ comment.date_created }}</span>
+                            <div class="ml-1 dropdown card-options">
+                              <button class="btn-options" type="button" id="note-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">more_vert</i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#">Edit</a>
+                                <a class="dropdown-item text-danger" href="#">Delete</a>
                               </div>
                             </div>
-                            <!--end of avatar-->
-                            <form>
-                              <div class="form-group row align-items-center">
-                                <label class="col-3">Title</label>
-                                <div class="col">
-                                  <input type="text" placeholder="Title" value="{{ ticket.title }}" name="ticket-title" class="form-control" required />
-                                </div>
-                              </div>
-                              <div class="form-group row align-items-center">
-                                <label class="col-3">Last Name</label>
-                                <div class="col">
-                                  <input type="text" placeholder="First name" value="Whittaker" name="profile-last-name" class="form-control" />
-                                </div>
-                              </div>
-                              <div class="form-group row align-items-center">
-                                <label class="col-3">Email</label>
-                                <div class="col">
-                                  <input type="email" placeholder="Enter your email address" name="profile-email" class="form-control" required />
-                                </div>
-                              </div>
-                              <div class="form-group row align-items-center">
-                                <label class="col-3">Location</label>
-                                <div class="col">
-                                  <input type="text" placeholder="Enter your location" name="profile-location" class="form-control" />
-                                </div>
-                              </div>
-                              <div class="form-group row">
-                                <label class="col-3">Bio</label>
-                                <div class="col">
-                                  <textarea placeholder="Tell us a little about yourself" name="profile-bio" class="form-control" rows="4"></textarea>
-                                  <small>This will be displayed on your public profile</small>
-                                </div>
-                              </div>
-                              <div class="row justify-content-end">
-                                <button type="submit" class="btn btn-primary">Save</button>
-                              </div>
-                            </form>
                           </div>
                         </div>
+                        <div class="card-body" data-filter-by="text">
+                          <p>{{ comment.message }}</p>
+                        </div>
                       </div>
+                      {% endfor %}
                     </div>
                   </div>
                 </div>
@@ -268,7 +265,7 @@
                                 </div>
                               </li>
                               <li>
-                                <img alt="Claire" src="{{ history.user.profile.image.url }}" class="avatar" data-filter-by="alt" />
+                                <img alt="{{ history.user.username }}" src="{{ history.user.profile.image.url }}" class="avatar" data-filter-by="alt" />
                               </li>
                             </ul>
                             <div class="media-body">

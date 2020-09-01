@@ -6,6 +6,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.http import HttpResponse
+from .forms import TicketUpdateForm
 
 def TicketInfo(request, pk=None):
 	if pk:
@@ -15,6 +16,7 @@ def TicketInfo(request, pk=None):
 	attachments = ticket.attachment_set.all().order_by('-date_created')
 	developers = TicketDev.objects.filter(ticket=ticket).order_by('-date_added')
 
+	form = TicketUpdateForm(instance=ticket)
 	# paginator = Paginator(comments, 5)
 	# page_number = request.GET.get('page')
 	# page_obj_comments = paginator.get_page(page_number)
@@ -31,7 +33,7 @@ def TicketInfo(request, pk=None):
 	# page_number = request.GET.get('page')
 	# page_obj_attachments = paginator.get_page(page_number)
 	if request.user.membership.team.project_set.filter(pk=ticket.project.id).exists():
-		return render(request, 'tickets/ticket_info.html', {'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
+		return render(request, 'tickets/ticket_info.html', {'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 

@@ -35,6 +35,7 @@ class Ticket(models.Model):
 		return reverse('home')
 
 class Comment(models.Model):
+	subject = models.CharField(max_length=128)
 	message = models.CharField(max_length=500)
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 	date_created = models.DateTimeField(auto_now_add=True)
