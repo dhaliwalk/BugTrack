@@ -96,7 +96,13 @@
                                 </a>
                               </div>
                               <ul class="avatars">
-                                  <span class="text-small">{{ project.description }}</span>
+                                  {% for member in project.members.all %}
+                                  <li>
+                                    <a href="#" data-toggle="tooltip" title="{{ member.username }}">
+                                      <img alt="{{ member.username }}" class="avatar" src="{{ member.profile.image.url }}" data-filter-by="alt" />
+                                    </a>
+                                  </li>
+                                  {% endfor %}
                               </ul>
                               <!-- <div class="card-meta d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
