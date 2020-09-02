@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import TicketUpdateForm, TicketDevCreateForm, CommentCreateForm, AttachmentCreateForm
 from django.forms.models import model_to_dict
+from django import forms
 def TicketInfo(request, pk=None):
 	if pk:
 		ticket = Ticket.objects.get(pk=pk)
@@ -80,7 +81,6 @@ def TicketInfo(request, pk=None):
 			return HttpResponseRedirect(reverse('ticket-info', kwargs={'pk': ticket.id}))
 	
 	elif request.method == 'POST' and 'file_add' in request.POST:
-		print('AAAAAAAAAAAAA')
 		form = TicketUpdateForm(instance=ticket)
 		comment_form = CommentCreateForm()
 		file_form = AttachmentCreateForm(request.POST, request.FILES)
@@ -88,7 +88,6 @@ def TicketInfo(request, pk=None):
 		current_ticketdevs_ids = ticket.developers.all().values_list('id',flat=True)
 		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
 		if file_form.is_valid():
-			print('AAAAAAAAAAAAA')
 			file_form.instance.ticket = ticket
 			file_form.instance.poster = request.user
 			History.objects.create(user=request.user, action=f"Added Attachment", old_value="", new_value=file_form.instance.title, ticket=ticket, icon_type='library_add')
@@ -139,7 +138,7 @@ class TicketCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 
 class TicketUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Ticket
-	fields = ['title', 'description', 'priority', 'status', 'ticket_type']
+	form_class = TicketUpdateForm
 
 	def get_success_url(self):
 		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})

@@ -5,7 +5,10 @@ from .models import Ticket, TicketDev, Comment, Attachment
 class TicketUpdateForm(forms.ModelForm):
 	class Meta:
 		model = Ticket
-		fields = ['title', 'description', 'priority', 'status', 'ticket_type']
+		fields = ['title', 'description', 'priority', 'status', 'ticket_type', 'deadline']
+		widgets = {
+			'deadline': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a Date', 'type':'date'})
+		}
 
 class TicketDevCreateForm(forms.ModelForm):
 	class Meta:

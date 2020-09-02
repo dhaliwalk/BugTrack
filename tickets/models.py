@@ -25,6 +25,7 @@ class Ticket(models.Model):
 	status = models.CharField(max_length=128, choices=status_choices, default="OPEN")
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_updated = models.DateTimeField(auto_now=True)
+	deadline = models.DateField()
 	ticket_type = models.CharField(max_length=128)
 	developers = models.ManyToManyField(User, through='TicketDev', related_name='ticket_developers')
 
