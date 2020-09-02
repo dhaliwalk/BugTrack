@@ -1,17 +1,44 @@
-{% extends "main/base.html" %}
+{% extends "main/index.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
-	<div class="content-section">
-		<form method="POST">
-			{% csrf_token %}
-			<fieldset class="form-group">
-				<legend class="border-bottom mb-4">Remove Developer</legend>
-				<h2>Are you sure you want to remove the developer "{{ object.user.username }}"</h2>
-			</fieldset>
-			<div class="form-group">
-				<button class="btn btn-outline-danger" type="submit">Yes, Delete</button>
-				<a class="btn btn-outline-secondary" href="{% url 'ticket-info' object.ticket.id %}">Cancel</a>
-			</div>
-		</form>
 
-	</div>
+	<div class="main-container">
+
+        <div class="navbar bg-white breadcrumb-bar">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item"><a href="{% url 'team-list' %}">Team</a>
+              </li>
+              <li class="breadcrumb-item"><a href="{% url 'project-info' object.ticket.project.id %}">Project</a>
+              </li>
+              <li class="breadcrumb-item"><a href="{% url 'ticket-info' object.ticket.id %}">Ticket</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">Delete Ticket Member</li>
+            </ol>
+          </nav>
+        </div>
+
+	<div class="main-container fullscreen">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-5 col-lg-6 col-md-7">
+          <div class="text-center">
+            <h1 class="h2 border-bottom mb-4">Remove Ticket Member</h1>
+            <form method="POST">
+				{% csrf_token %}
+				<fieldset class="form-group">
+					<h2>Are you sure you want to remove the ticket member "{{ object.user.username }}"</h2>
+				</fieldset>
+				<div class="form-group">
+					<button class="btn btn-outline-danger" type="submit">Yes, Delete</button>
+					<a class="btn btn-outline-secondary" href="{% url 'ticket-info' object.ticket.id %}">Cancel</a>
+				</div>
+			</form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
