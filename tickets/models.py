@@ -5,17 +5,17 @@ from django.urls import reverse
 
 class Ticket(models.Model):
 	status_choices = [
-		("OPEN", "Open"),
-		("IN_PROGRESS", "In Progress"),
-		("RESOLVED", "Resolved"),
-		("CLOSED", "Closed"),
-		("WAITING_ON_MORE_INFO", "Waiting on More Info"),
+		("Open", "Open"),
+		("In Progress", "In Progress"),
+		("Resolved", "Resolved"),
+		("Closed", "Closed"),
+		("Waiting on More Info", "Waiting on More Info"),
 	]
 	priority_choices = [
-		("HIGH", "High"),
-		("MEDIUM", "Medium"),
-		("LOW", "Low"),
-		("NONE", "None"),
+		("High", "High"),
+		("Medium", "Medium"),
+		("Low", "Low"),
+		("None", "None"),
 	]
 	title = models.CharField(max_length=128)
 	description = models.CharField(max_length=500)

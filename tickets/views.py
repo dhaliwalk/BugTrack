@@ -6,8 +6,8 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import TicketUpdateForm, TicketDevCreateForm
-
+from .forms import TicketUpdateForm, TicketDevCreateForm, CommentCreateForm, AttachmentCreateForm
+from django.forms.models import model_to_dict
 def TicketInfo(request, pk=None):
 	if pk:
 		ticket = Ticket.objects.get(pk=pk)
@@ -15,6 +15,7 @@ def TicketInfo(request, pk=None):
 	history_list = ticket.history_set.all().order_by('-date_changed')
 	attachments = ticket.attachment_set.all().order_by('-date_created')
 	developers = TicketDev.objects.filter(ticket=ticket).order_by('-date_added')
+	old_ticket = model_to_dict(ticket).items()
 	# paginator = Paginator(comments, 5)
 	# page_number = request.GET.get('page')
 	# page_obj_comments = paginator.get_page(page_number)
@@ -32,29 +33,78 @@ def TicketInfo(request, pk=None):
 	# page_obj_attachments = paginator.get_page(page_number)
 	if request.method == 'POST' and 'ticket_edit' in request.POST:
 		form = TicketUpdateForm(request.POST, instance=ticket)
+		comment_form = CommentCreateForm()
+		file_form = AttachmentCreateForm()
 		u_form = TicketDevCreateForm()
 		current_ticketdevs_ids = ticket.developers.all().values_list('id',flat=True)
 		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
 		if form.is_valid():
+			for field, value in old_ticket:
+				if field in ['title', 'description', 'priority', 'status', 'ticket_type']:
+					newval = getattr(form.instance, field)
+					if value == newval:
+						print(value)
+						print(newval)
+						continue
+					else:
+						print('hi')
+						History.objects.create(user=request.user, action=f"Updated {field} field", old_value=value, new_value=newval, ticket=ticket, icon_type='update')
 			form.save()
 			return HttpResponseRedirect(reverse('ticket-info', kwargs={'pk': ticket.id}))
-	if request.method == 'POST' and 'user_add' in request.POST:
+	
+	elif request.method == 'POST' and 'user_add' in request.POST:
 		form = TicketUpdateForm(instance=ticket)
+		comment_form = CommentCreateForm()
+		file_form = AttachmentCreateForm()
 		u_form = TicketDevCreateForm(request.POST)
 		current_ticketdevs_ids = ticket.developers.all().values_list('id',flat=True)
 		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
 		if u_form.is_valid():
 			u_form.instance.ticket = ticket
+			History.objects.create(user=request.user, action=f"Added Developer", old_value="", new_value=u_form.instance.user.username, ticket=ticket, icon_type='person_add')
 			u_form.save()
 			return HttpResponseRedirect(reverse('ticket-info', kwargs={'pk': ticket.id}))
+	
+	elif request.method == 'POST' and 'comment_add' in request.POST:
+		form = TicketUpdateForm(instance=ticket)
+		comment_form = CommentCreateForm(request.POST)
+		file_form = AttachmentCreateForm()
+		u_form = TicketDevCreateForm()
+		current_ticketdevs_ids = ticket.developers.all().values_list('id',flat=True)
+		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
+		if comment_form.is_valid():
+			comment_form.instance.ticket = ticket
+			comment_form.instance.author = request.user
+			History.objects.create(user=request.user, action=f"Created comment", old_value="", new_value=comment_form.instance.message, ticket=ticket, icon_type='add_comment')
+			comment_form.save()
+			return HttpResponseRedirect(reverse('ticket-info', kwargs={'pk': ticket.id}))
+	
+	elif request.method == 'POST' and 'file_add' in request.POST:
+		print('AAAAAAAAAAAAA')
+		form = TicketUpdateForm(instance=ticket)
+		comment_form = CommentCreateForm()
+		file_form = AttachmentCreateForm(request.POST, request.FILES)
+		u_form = TicketDevCreateForm()
+		current_ticketdevs_ids = ticket.developers.all().values_list('id',flat=True)
+		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
+		if file_form.is_valid():
+			print('AAAAAAAAAAAAA')
+			file_form.instance.ticket = ticket
+			file_form.instance.poster = request.user
+			History.objects.create(user=request.user, action=f"Added Attachment", old_value="", new_value=file_form.instance.title, ticket=ticket, icon_type='library_add')
+			file_form.save()
+			return HttpResponseRedirect(reverse('ticket-info', kwargs={'pk': ticket.id}))
+	
 	else:
 		form = TicketUpdateForm(instance=ticket)
+		comment_form = CommentCreateForm()
+		file_form = AttachmentCreateForm()
 		u_form = TicketDevCreateForm()
 		current_ticketdevs_ids = ticket.developers.all().values_list('id',flat=True)
 		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
 
 	if request.user.membership.team.project_set.filter(pk=ticket.project.id).exists():
-		return render(request, 'tickets/ticket_info.html', {'u_form':u_form, 'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
+		return render(request, 'tickets/ticket_info.html', {'file_form': file_form, 'comment_form': comment_form, 'u_form':u_form, 'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 
@@ -147,7 +197,7 @@ class CommentCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 
 class CommentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Comment
-	fields = ['message']
+	fields = ['subject', 'message']
 
 	def get_success_url(self):
 		comment = self.get_object()
