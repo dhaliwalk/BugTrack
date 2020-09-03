@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.core.paginator import Paginator
 from .decorators import unauthenticated_user
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 @unauthenticated_user
@@ -99,8 +99,10 @@ def profile(request):
 
 def UserProfile(request, pk=None):
 	user = User.objects.get(pk=pk)
-	return render(request, 'users/user_profile.html', {'user': user})
-
+	if request.user.membership.team == user.membership.team:
+		return render(request, 'users/user_profile.html', {'user': user})
+	else:
+		return HttpResponse('<h1>Not authorized to view this page</h1>')
 # class TeamCreateView(LoginRequiredMixin, CreateView):
 # 	model = Team
 # 	fields = ['name', 'pin']

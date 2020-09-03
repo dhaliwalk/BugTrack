@@ -58,7 +58,7 @@
                   <ul class="avatars">
                     {% for developer in developers %}
                       <li>
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="{{ developer.user.username }}">
+                        <a href="{% url 'user-profile' developer.user.id %}" data-toggle="tooltip" data-placement="top" title="{{ developer.user.username }}">
                           <img alt="{{ developer.user.username }}" class="avatar" src="{{ developer.user.profile.image.url }}" />
                         </a>
                       </li>
@@ -229,7 +229,7 @@
                     <div class="content-list-body row">
                       {% for developer in developers %}
                         <div class="col-6">
-                          <a class="media media-member" href="#">
+                          <a class="media media-member" href="{% url 'user-profile' developer.user.id %}">
                             <img alt="{{ member.user.username }}" src="{{ developer.user.profile.image.url }}" class="avatar avatar-lg" />
                             <div class="media-body">
                               <h6 class="mb-0" data-filter-by="text">{{ developer.user.username }}</h6>

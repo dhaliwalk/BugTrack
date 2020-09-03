@@ -38,7 +38,7 @@
                   <ul class="avatars">
                     {% for member in members %}
                       <li>
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="{{ member.user.username }}">
+                        <a href="{% url 'user-profile' member.user.id %}" data-toggle="tooltip" data-placement="top" title="{{ member.user.username }}">
                           <img alt="{{ member.user.username }}" class="avatar" src="{{ member.user.profile.image.url }}" />
                         </a>
                       </li>
@@ -115,7 +115,7 @@
                               <ul class="avatars">
                                 {% for member in ticket.developers.all %}
                                   <li>
-                                    <a href="#" data-toggle="tooltip" title="{{ member.username }}">
+                                    <a href="{% url 'user-profile' member.id %}" data-toggle="tooltip" title="{{ member.username }}">
                                       <img alt="{{ member.username }}" class="avatar" src="{{ member.profile.image.url }}" data-filter-by="alt" />
                                     </a>
                                   </li>
@@ -159,7 +159,7 @@
                     <div class="content-list-body row">
                       {% for member in members %}
                         <div class="col-6">
-                          <a class="media media-member" href="#">
+                          <a class="media media-member" href="{% url 'user-profile' member.user.id %}">
                             <img alt="{{ member.user.username }}" src="{{ member.user.profile.image.url }}" class="avatar avatar-lg" />
                             <div class="media-body">
                               <h6 class="mb-0" data-filter-by="text">{{ member.user.username }}</h6>
