@@ -6,7 +6,7 @@
         <div class="navbar bg-white breadcrumb-bar">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="index.html">Home</a>
+              <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
               </li>
               <li class="breadcrumb-item active" aria-current="page">Team</li>
             </ol>
@@ -113,53 +113,35 @@
                               </div> -->
                             </div>
                           </div>
+                          
                         </div>
                       {% endfor %}
-
-
-                      <div class="col-lg-6">
-                        <div class="card card-project">
-
-                          <div class="card-body">
-                            <div class="dropdown card-options">
-                              <button class="btn-options" type="button" id="project-dropdown-button-7" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="material-icons">more_vert</i>
-                              </button>
-                              <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="#">Edit</a>
-                                <a class="dropdown-item" href="#">Share</a>
-                              </div>
-                            </div>
-                            <div class="card-title">
-                              <a href="#">
-                                <h5 data-filter-by="text">Annual Team Meeting</h5>
-                              </a>
-                            </div>
-                            <ul class="avatars">
-
-                              <li>
-                                <a href="#" data-toggle="tooltip" title="Ravi">
-                                  <img alt="Ravi Singh" class="avatar" src="assets/img/avatar-male-3.jpg" data-filter-by="alt" />
-                                </a>
-                              </li>
-
-                            </ul>
-                            <div class="card-meta d-flex justify-content-between">
-                              <div class="d-flex align-items-center">
-                                <i class="material-icons mr-1">playlist_add_check</i>
-                                <span class="text-small">-/-</span>
-                              </div>
-                              <span class="text-small" data-filter-by="text">Unscheduled</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
                     </div>
                     <!--end of content list body-->
                   </div>
                   <!--end of content list-->
+                <div class="pagination justify-content-center">
+                  
+                    {% if projects.has_previous == True or projects.has_next == True %}
+                      {% if projects.has_previous %}
+                        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                      {% endif %}
+                      {% for num in projects.paginator.page_range %}
+                        {% if projects.number == num %}
+                          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                        {% elif num > projects.number|add:-2 %}
+                          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                        {% endif %}
+                      {% endfor %}
+
+                      {% if projects.has_next %}
+                        <a class="btn btn-outline-info mb-4" href="?page={{projects.paginator.num_pages }}">Last</a>
+                      {% endif %}
+                    {% endif %}
+
                 </div>
+              </div>
+                
                 <!--end of tab-->
                 <div class="tab-pane fade" id="members" role="tabpanel" data-filter-list="content-list-body">
                   <div class="content-list">
@@ -210,11 +192,13 @@
                   <!--end of content list-->
                 </div>
               </div>
-              <form class="modal fade" id="team-manage-modal" tabindex="-1" aria-hidden="true">
+
+              <form method="POST" class="modal fade" id="team-manage-modal" tabindex="-1" aria-hidden="true">
+                {% csrf_token %}
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title">Manage Team</h5>
+                      <h5 class="modal-title">Update Team</h5>
                       <button type="button" class="close btn btn-round" data-dismiss="modal" aria-label="Close">
                         <i class="material-icons">close</i>
                       </button>
@@ -229,20 +213,13 @@
                       <div class="tab-content">
                         <div class="tab-pane fade show active" id="team-manage-details" role="tabpanel">
                           <h6>Team Details</h6>
-                          <div class="form-group row align-items-center">
-                            <label class="col-3">Name</label>
-                            <input class="form-control col" type="text" placeholder="Team name" name="team-name" value="Medium Rare" />
-                          </div>
-                          <div class="form-group row">
-                            <label class="col-3">Description</label>
-                            <textarea class="form-control col" rows="3" placeholder="Team description" name="team-description">A small web studio crafting lovely template products.</textarea>
-                          </div>
+                          {{ update_form|crispy }}
                         </div>
                       </div>
                     </div>
                     <!--end of modal body-->
                     <div class="modal-footer">
-                      <button role="button" class="btn btn-primary" type="submit">
+                      <button role="button" class="btn btn-primary" type="submit" name="team_update">
                         Done
                       </button>
                     </div>
@@ -275,7 +252,7 @@
                     </div>
                     <!--end of modal body-->
                     <div class="modal-footer">
-                      <button role="button" class="btn btn-primary" type="submit">
+                      <button role="button" class="btn btn-primary" type="submit" name="project_create">
                         Create Project
                       </button>
                     </div>

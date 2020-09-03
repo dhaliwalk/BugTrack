@@ -8,7 +8,7 @@ class Project(models.Model):
 	description = models.CharField(max_length=500)
 	members = models.ManyToManyField(User, through='ProjectMember')
 	team = models.ForeignKey(Team, on_delete=models.CASCADE)
-
+	date_created = models.DateTimeField(auto_now_add=True)
 	def __str__(self):
 		return self.name
 	

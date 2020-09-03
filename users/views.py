@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, TeamJoinForm, TeamCreationForm, ProjectCreateForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, TeamJoinForm, TeamCreationForm, ProjectCreateForm, TeamUpdateForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -111,20 +111,28 @@ def UserProfile(request, pk=None):
 def TeamList(request):
 	team = request.user.membership.team
 	members = team.members.all()
-	projects = team.project_set.all()
+	projects = team.project_set.all().order_by('-date_created')
 
-	paginator = Paginator(members, 5)
+	paginator = Paginator(projects, 4)
 	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
-	if request.method == 'POST':
+	projects = paginator.get_page(page_number)
+	if request.method == 'POST' and 'project_create' in request.POST:
 		form = ProjectCreateForm(request.POST)
+		update_form = TeamUpdateForm(instance=team)
 		if form.is_valid():
 			form.instance.team = request.user.membership.team
 			form.save()
 			return HttpResponseRedirect(reverse('team-list'))
+	elif request.method == 'POST' and 'team_update' in request.POST:
+		form = ProjectCreateForm()
+		update_form = TeamUpdateForm(request.POST, instance=team)
+		if update_form.is_valid():
+			update_form.save()
+			return HttpResponseRedirect(reverse('team-list'))
 	else:
 		form = ProjectCreateForm()
-	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'page_obj': page_obj, 'projects': projects, 'form': form})
+		update_form = TeamUpdateForm(instance=team)
+	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'projects': projects, 'form': form, 'update_form': update_form})
 	
 
 
