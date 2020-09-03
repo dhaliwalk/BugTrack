@@ -9,7 +9,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 from .forms import TicketCreateForm, ProjectUpdateForm, ProjectMemberCreateForm
 from django.http import HttpResponse, HttpResponseRedirect
-from datetime import date
+
 def list(request):
 	user = request.user
 	role = user.membership.role
@@ -40,7 +40,6 @@ def ProjectInfo(request, pk=None):
 		project = Project.objects.get(pk=pk)
 	members = ProjectMember.objects.filter(project=project)
 	tickets = project.ticket_set.all().order_by('-date_created')
-	time = date.today().strftime('%Y-%m-%d')
 	if request.method == 'POST' and 'ticket_form' in request.POST:
 		form = TicketCreateForm(request.POST)
 		u_form = ProjectUpdateForm(instance=project)
@@ -82,8 +81,7 @@ def ProjectInfo(request, pk=None):
 		return render(request, 'projects/project_info.html', 
 			{'member_form': member_form,'u_form': u_form, 'form': form, 'project':project,  
 			'tickets': tickets,
-			'members': members,
-			'time':time})
+			'members': members,})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 

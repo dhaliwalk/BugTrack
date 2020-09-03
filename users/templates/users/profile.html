@@ -1,7 +1,7 @@
-{% extends "main/base.html" %}
+{% extends "main/index.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-	<div class="content-section">
+<!-- 	<div class="content-section">
       <div class="media">
         <img width="250" height="250" class="rounded-circle account-img" src="{{ user.profile.image.url }}">
         <div class="media-body">
@@ -20,5 +20,92 @@
           <button class="btn btn-outline-info" type="submit">Update</button>
         </div>
       </form>
-    </div>
+    </div> -->
+  <div class="main-container">
+
+        <div class="breadcrumb-bar navbar bg-white sticky-top">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">Profile</li>
+            </ol>
+          </nav>
+
+        </div>
+        <div class="container">
+          <div class="row justify-content-center mt-5">
+            <div class="col-lg-3 mb-3">
+              <ul class="nav nav-tabs flex-lg-column" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">Your Profile</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="password-tab" data-toggle="tab" href="#password" role="tab" aria-controls="password" aria-selected="false">Password</a>
+                </li>
+              </ul>
+            </div>
+            <div class="col-xl-8 col-lg-9">
+              <div class="card">
+                <div class="card-body">
+                  <div class="tab-content">
+                    <div class="tab-pane fade show active" role="tabpanel" id="profile">
+                      <div class="media mb-4">
+                        <img alt="Image" src="{{ user.profile.image.url }}" class="avatar avatar-lg" />
+                        <div class="media-body ml-3">
+                          <div class="custom-file custom-file-naked d-block mb-1">
+                            <input type="file" class="custom-file-input d-none" id="avatar-file">
+                            <label class="custom-file-label position-relative" for="avatar-file">
+                              <span >
+                                {{ user.username }}
+                              </span>
+                            </label>
+                          </div>
+                          <small>{{ user.email }}</small>
+                        </div>
+                      </div>
+                      <!--end of avatar-->
+                      <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ p_form|crispy }}
+                        {{ u_form|crispy }}
+                        <div class="row justify-content-end">
+                          <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                      </form>
+                    </div>
+                    <div class="tab-pane fade" role="tabpanel" id="password">
+                      <form>
+                        <div class="form-group row align-items-center">
+                          <label class="col-3">Current Password</label>
+                          <div class="col">
+                            <input type="password" placeholder="Enter your current password" name="password-current" class="form-control" />
+                          </div>
+                        </div>
+                        <div class="form-group row align-items-center">
+                          <label class="col-3">New Password</label>
+                          <div class="col">
+                            <input type="password" placeholder="Enter a new password" name="password-new" class="form-control" />
+                            <small>Password must be at least 8 characters long</small>
+                          </div>
+                        </div>
+                        <div class="form-group row align-items-center">
+                          <label class="col-3">Confirm Password</label>
+                          <div class="col">
+                            <input type="password" placeholder="Confirm your new password" name="password-new-confirm" class="form-control" />
+                          </div>
+                        </div>
+                        <div class="row justify-content-end">
+                          <button type="submit" class="btn btn-primary">Change Password</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
 {% endblock content %}
