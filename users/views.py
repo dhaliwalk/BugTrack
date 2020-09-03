@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, TeamJoinForm, TeamCreationForm, ProjectCreateForm
@@ -12,6 +12,8 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 from .decorators import unauthenticated_user
 from django.http import HttpResponseRedirect
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
 @unauthenticated_user
 def RegisterUserJoinTeam(request):
 	if request.method == 'POST':
@@ -62,25 +64,42 @@ def RegisterUserCreateTeam(request):
 
 @login_required
 def profile(request):
-	if request.method == 'POST':
+	if request.method == 'POST' and 'profile_update' in request.POST:
 		u_form = UserUpdateForm(request.POST, instance=request.user)
 		p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-		
+		pass_form =PasswordChangeForm(user=request.user)
 		if u_form.is_valid() and p_form.is_valid():
 			u_form.save()
 			p_form.save()
-			messages.success(request, 'You account has been updated')
-			return redirect('profile')
-
+			messages.success(request, 'Your account has been updated')
+			return HttpResponseRedirect(reverse('profile'))
+		else:
+			messages.warning(request, 'Account not updated correctly!')
+	if request.method == 'POST' and 'pass_reset' in request.POST:
+		u_form = UserUpdateForm(instance=request.user)
+		p_form = ProfileUpdateForm(instance=request.user.profile)
+		pass_form = PasswordChangeForm(user=request.user, data=request.POST)
+		if pass_form.is_valid():
+			pass_form.save()
+			messages.success(request, 'Password was updated!')
+			update_session_auth_hash(request, pass_form.user)
+			return HttpResponseRedirect(reverse('profile'))
+		else:
+			messages.warning(request, 'Password was not updated')
 	else:
 		u_form = UserUpdateForm(instance=request.user)
 		p_form = ProfileUpdateForm(instance=request.user.profile)
+		pass_form = PasswordChangeForm(user=request.user)
 	context = {
 		'u_form': u_form,
-		'p_form': p_form
+		'p_form': p_form,
+		'pass_form': pass_form,
 	}
 	return render(request, 'users/profile.html', context)
 
+def UserProfile(request, pk=None):
+	user = User.objects.get(pk=pk)
+	return render(request, 'users/user_profile.html', {'user': user})
 
 # class TeamCreateView(LoginRequiredMixin, CreateView):
 # 	model = Team

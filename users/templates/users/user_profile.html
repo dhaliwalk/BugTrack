@@ -1,0 +1,50 @@
+{% extends "main/index.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="main-container">
+          
+        <div class="breadcrumb-bar navbar bg-white sticky-top">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">{{ user.username }}'s Profile</li>
+            </ol>
+          </nav>
+        </div>
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="container">
+          <div class="justify-content-center mt-5">
+              <div class="card">
+                <div class="card-body">
+
+                      <div class="media mb-4">
+                        <img alt="Image" src="{{ user.profile.image.url }}" class="avatar avatar-lg" />
+                        <div class="media-body ml-3">
+                          <div class="custom-file custom-file-naked d-block mb-1">
+
+                            <label class="custom-file-label position-relative" for="avatar-file">
+                              <h1 >
+                                {{ user.username }}
+                              </h1>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      <h3>Contact Info:</h3>
+                      <p class="lead">Email: {{ user.email }}</p>
+                      <!--end of avatar-->
+                  </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+{% endblock content %}

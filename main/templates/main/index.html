@@ -31,7 +31,7 @@
                   <img alt="Image" src="{{ request.user.profile.image.url }}" class="avatar" />
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
-                  <a href="{% static 'nav-side-user.html' %}" class="dropdown-item">Profile</a>
+                  <a href="{% url 'profile' %}" class="dropdown-item">Profile</a>
                   <a href="{% url 'logout' %}" class="dropdown-item text-danger">Log Out</a>
                 </div>
               </div>
