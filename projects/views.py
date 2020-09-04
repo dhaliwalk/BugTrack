@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Project, ProjectMember
+from .models import Project, ProjectMember, ProjectHistory
 from users.models import Team
 from django.contrib import messages
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -9,6 +9,9 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 from .forms import TicketCreateForm, ProjectUpdateForm, ProjectMemberCreateForm
 from django.http import HttpResponse, HttpResponseRedirect
+from tickets.models import History
+from django.forms.models import model_to_dict
+
 
 def list(request):
 	user = request.user
@@ -40,6 +43,9 @@ def ProjectInfo(request, pk=None):
 		project = Project.objects.get(pk=pk)
 	members = ProjectMember.objects.filter(project=project)
 	tickets = project.ticket_set.all().order_by('-date_created')
+	history_list = project.projecthistory_set.all().order_by('-date_changed')
+	old_project = model_to_dict(project).items()
+
 	if request.method == 'POST' and 'ticket_form' in request.POST:
 		form = TicketCreateForm(request.POST)
 		u_form = ProjectUpdateForm(instance=project)
@@ -49,8 +55,10 @@ def ProjectInfo(request, pk=None):
 		if form.is_valid():
 			form.instance.submitter = request.user
 			form.instance.project = project 
+			ProjectHistory.objects.create(user=request.user, action=f"Created Ticket '{form.instance.title}' ", old_value='', new_value='', project=project, icon_type='library_add')
 			form.save()
 			return HttpResponseRedirect(reverse('project-info', kwargs={'pk': project.id}))
+
 	elif request.method == 'POST' and 'update_form' in request.POST:
 		u_form = ProjectUpdateForm(request.POST, instance=project)
 		form = TicketCreateForm()
@@ -58,8 +66,16 @@ def ProjectInfo(request, pk=None):
 		current_projectdevs_ids = Project.objects.get(pk=project.id).members.all().values_list('id',flat=True)
 		member_form.fields['user'].queryset = Team.objects.get(pk=project.team.id).members.exclude(id__in=current_projectdevs_ids)
 		if u_form.is_valid():
+			for field, value in old_project:
+				if field in ['name', 'description']:
+					newval = getattr(u_form.instance, field)
+					if value == newval:
+						continue
+					else:
+						ProjectHistory.objects.create(user=request.user, action=f"Updated {field} field", old_value=value, new_value=newval, project=project, icon_type='update')
 			u_form.save()
 			return HttpResponseRedirect(reverse('project-info', kwargs={'pk': project.id}))
+
 	elif request.method == 'POST' and 'member_submit' in request.POST:
 		u_form = ProjectUpdateForm(instance=project)
 		form = TicketCreateForm()
@@ -68,8 +84,10 @@ def ProjectInfo(request, pk=None):
 		member_form.fields['user'].queryset = Team.objects.get(pk=project.team.id).members.exclude(id__in=current_projectdevs_ids)
 		if member_form.is_valid():
 			member_form.instance.project = project
+			ProjectHistory.objects.create(user=request.user, action=f"Added User '{member_form.instance.user.username}' ", old_value='', new_value='', project=project, icon_type='person_add')
 			member_form.save()
 			return HttpResponseRedirect(reverse('project-info', kwargs={'pk': project.id}))
+
 	else:
 		form = TicketCreateForm()
 		u_form = ProjectUpdateForm(instance=project)
@@ -81,7 +99,8 @@ def ProjectInfo(request, pk=None):
 		return render(request, 'projects/project_info.html', 
 			{'member_form': member_form,'u_form': u_form, 'form': form, 'project':project,  
 			'tickets': tickets,
-			'members': members,})
+			'members': members,
+			'history_list': history_list})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 
@@ -99,6 +118,17 @@ class ProjectUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 
 	def get_success_url(self):
 		return reverse('project-info', kwargs={'pk': self.get_object().id})
+
+	def form_valid(self, form):
+		old_project = Project.objects.get(pk=self.kwargs['pk']).__dict__
+		for field, value in old_project.items():
+			if field in ['name', 'description']:
+				newval = getattr(form.instance, field)
+				if value == newval:
+					continue
+				else:
+					ProjectHistory.objects.create(user=self.request.user, action=f"Updated {field} field", old_value=value, new_value=newval, project=self.get_object(), icon_type='update')
+		return super().form_valid(form)
 
 	def test_func(self):
 		project = self.get_object()
@@ -147,7 +177,12 @@ class ProjectMemberDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteVie
 	def get_success_url(self):
 		project = self.get_object().project
 		return reverse('project-info', kwargs={'pk': project.id})
-	
+
+	def delete(self, request, *args, **kwargs):
+		project_member = self.get_object()
+		ProjectHistory.objects.create(user=self.request.user, action=f"Removed User '{project_member.user.username}", old_value='', new_value='', project=project_member.project, icon_type='person_remove')
+		return super(ProjectMemberDeleteView, self).delete(request, *args, **kwargs)
+
 	def test_func(self):
 		project = self.get_object().project
 		if self.request.user.membership.team.project_set.filter(pk=project.id).exists() and self.request.user.membership.role == 'Admin':

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Ticket, Comment, History, Attachment, TicketDev
-from projects.models import Project
+from projects.models import Project, ProjectHistory
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse
@@ -9,6 +9,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import TicketUpdateForm, TicketDevCreateForm, CommentCreateForm, AttachmentCreateForm
 from django.forms.models import model_to_dict
 from django import forms
+
+
+
 def TicketInfo(request, pk=None):
 	if pk:
 		ticket = Ticket.objects.get(pk=pk)
@@ -44,11 +47,8 @@ def TicketInfo(request, pk=None):
 				if field in ['title', 'description', 'priority', 'status', 'ticket_type']:
 					newval = getattr(form.instance, field)
 					if value == newval:
-						print(value)
-						print(newval)
 						continue
 					else:
-						print('hi')
 						History.objects.create(user=request.user, action=f"Updated {field} field", old_value=value, new_value=newval, ticket=ticket, icon_type='update')
 			form.save()
 			return HttpResponseRedirect(reverse('ticket-info', kwargs={'pk': ticket.id}))
@@ -62,7 +62,8 @@ def TicketInfo(request, pk=None):
 		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
 		if u_form.is_valid():
 			u_form.instance.ticket = ticket
-			History.objects.create(user=request.user, action=f"Added Developer", old_value="", new_value=u_form.instance.user.username, ticket=ticket, icon_type='person_add')
+			History.objects.create(user=request.user, action=f"Added User '{u_form.instance.user.username}'", old_value="", new_value="", ticket=ticket, icon_type='person_add')
+			ProjectHistory.objects.create(user=request.user, action=f"Added User '{u_form.instance.user.username}' to Ticket '{ticket.title}' ", old_value="", new_value="", project=ticket.project, icon_type='person_add')
 			u_form.save()
 			return HttpResponseRedirect(reverse('ticket-info', kwargs={'pk': ticket.id}))
 	
@@ -127,6 +128,7 @@ class TicketCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 		form.instance.project = project
 		form.instance.submitter = self.request.user
 		History.objects.create(user=self.request.user, action="Created Ticket", old_value=' ', new_value=form.instance.title, icon_type='library_add')
+		ProjectHistory.objects.create(user=self.request.user, action="Created Ticket", old_value=' ', new_value=form.instance.title, project=project, icon_type='library_add')
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -144,7 +146,6 @@ class TicketUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
 
 	def form_valid(self, form):
-		form.instance.submitter = self.request.user
 		old_ticket = Ticket.objects.get(pk=self.kwargs['pk']).__dict__
 		for field, value in old_ticket.items():
 			if field in ['title', 'description', 'priority', 'status', 'ticket_type']:
@@ -168,6 +169,11 @@ class TicketDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 		project = self.get_object().project
 		return reverse('project-info', kwargs={'pk': project.id})
 	
+	def delete(self, request, *args, **kwargs):
+		ticket = self.get_object()
+		ProjectHistory.objects.create(user=self.request.user, action=f"Deleted Ticket '{ticket.title}'", old_value='', new_value='', project=ticket.project, icon_type='delete')
+		return super(TicketDeleteView, self).delete(request, *args, **kwargs)
+
 	def test_func(self):
 		ticket = self.get_object()
 		if self.request.user == ticket.submitter or (self.request.user.membership.team.project_set.filter(pk=ticket.project.id).exists() and self.request.user.membership.role == 'Admin'):
@@ -313,7 +319,7 @@ class TicketDevCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 	def form_valid(self, form):
 		pk = self.kwargs['pk']
 		form.instance.ticket = Ticket.objects.get(pk=pk)
-		History.objects.create(user=self.request.user, action=f"Added Developer", old_value="", new_value=form.instance.user.username, ticket=form.instance.ticket, icon_type='person_add')
+		History.objects.create(user=self.request.user, action=f"Added User", old_value="", new_value=form.instance.user.username, ticket=form.instance.ticket, icon_type='person_add')
 		return super().form_valid(form)
 
 	def test_func(self):
@@ -330,7 +336,8 @@ class TicketDevDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 
 	def delete(self, request, *args, **kwargs):
 		ticketdev = self.get_object()
-		History.objects.create(user=self.request.user, action=f"Removed developer '{ticketdev.user.username}'", old_value=ticketdev.user.username, new_value='', ticket=ticketdev.ticket, icon_type='person_remove')
+		History.objects.create(user=self.request.user, action=f"Removed developer '{ticketdev.user.username}'", old_value='', new_value='', ticket=ticketdev.ticket, icon_type='person_remove')
+		ProjectHistory.objects.create(user=self.request.user, action=f"Removed developer '{ticketdev.user.username}' from ticket '{ticketdev.ticket}'", old_value='', new_value='', project=ticketdev.ticket.project, icon_type='person_remove')
 		return super(TicketDevDeleteView, self).delete(request, *args, **kwargs)
 	
 	def test_func(self):
