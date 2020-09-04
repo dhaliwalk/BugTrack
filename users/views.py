@@ -113,7 +113,7 @@ def TeamList(request):
 	members = team.members.all()
 	projects = team.project_set.all().order_by('-date_created')
 
-	paginator = Paginator(projects, 4)
+	paginator = Paginator(projects, 12)
 	page_number = request.GET.get('page')
 	projects = paginator.get_page(page_number)
 	if request.method == 'POST' and 'project_create' in request.POST:

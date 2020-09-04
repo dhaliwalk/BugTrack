@@ -46,6 +46,10 @@ def ProjectInfo(request, pk=None):
 	history_list = project.projecthistory_set.all().order_by('-date_changed')
 	old_project = model_to_dict(project).items()
 
+	paginator = Paginator(tickets, 12)
+	page_number = request.GET.get('page')
+	tickets = paginator.get_page(page_number)
+
 	if request.method == 'POST' and 'ticket_form' in request.POST:
 		form = TicketCreateForm(request.POST)
 		u_form = ProjectUpdateForm(instance=project)
