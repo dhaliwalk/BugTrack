@@ -45,10 +45,7 @@ def ProjectInfo(request, pk=None):
 	tickets = project.ticket_set.all().order_by('-date_created')
 	history_list = project.projecthistory_set.all().order_by('-date_changed')
 	old_project = model_to_dict(project).items()
-
-	paginator = Paginator(tickets, 12)
-	page_number = request.GET.get('page')
-	tickets = paginator.get_page(page_number)
+	query = request.GET.get('query')
 
 	if request.method == 'POST' and 'ticket_form' in request.POST:
 		form = TicketCreateForm(request.POST)
@@ -98,6 +95,16 @@ def ProjectInfo(request, pk=None):
 		member_form = ProjectMemberCreateForm()
 		current_projectdevs_ids = Project.objects.get(pk=project.id).members.all().values_list('id',flat=True)
 		member_form.fields['user'].queryset = Team.objects.get(pk=project.team.id).members.exclude(id__in=current_projectdevs_ids)
+
+
+	if query != None:
+		tickets = tickets.filter(title__contains=query)
+	if query == '':
+		tickets = project.ticket_set.all().order_by('-date_created')
+
+	paginator = Paginator(tickets, 12)
+	page_number = request.GET.get('page')
+	tickets = paginator.get_page(page_number)
 
 	if request.user.project_set.filter(pk=project.id).exists() or (request.user.membership.team.project_set.filter(pk=project.id).exists() and request.user.membership.role == 'Admin'):
 		return render(request, 'projects/project_info.html', 

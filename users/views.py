@@ -14,6 +14,8 @@ from .decorators import unauthenticated_user
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
+from django.db.models import Q
+
 @unauthenticated_user
 def RegisterUserJoinTeam(request):
 	if request.method == 'POST':
@@ -109,13 +111,15 @@ def UserProfile(request, pk=None):
 
 
 def TeamList(request):
+	role = request.user.membership.role
 	team = request.user.membership.team
 	members = team.members.all()
-	projects = team.project_set.all().order_by('-date_created')
+	if role == 'Admin':
+		projects = team.project_set.all().order_by('-date_created')
+	else:
+		projects = team.project_set.filter(members=request.user).order_by('-date_created')
 
-	paginator = Paginator(projects, 12)
-	page_number = request.GET.get('page')
-	projects = paginator.get_page(page_number)
+	query = request.GET.get('query')
 	if request.method == 'POST' and 'project_create' in request.POST:
 		form = ProjectCreateForm(request.POST)
 		update_form = TeamUpdateForm(instance=team)
@@ -132,6 +136,17 @@ def TeamList(request):
 	else:
 		form = ProjectCreateForm()
 		update_form = TeamUpdateForm(instance=team)
+
+	if query != None:
+		projects = projects.filter(name__contains=query)
+	if query == '':
+		if role == 'Admin':
+			projects = team.project_set.all().order_by('-date_created')
+		else:
+			projects = team.project_set.filter(members=request.user).order_by('-date_created')
+	paginator = Paginator(projects, 12)
+	page_number = request.GET.get('page')
+	projects = paginator.get_page(page_number)
 	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'projects': projects, 'form': form, 'update_form': update_form})
 	
 

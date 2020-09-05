@@ -24,7 +24,7 @@
 
               <a class="dropdown-item" href="#" data-toggle="modal" data-target="#project-edit-modal">Edit Ticket</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item text-danger" href="#">Delete</a>
+              <a class="dropdown-item text-danger" href="{% url 'ticket-delete' ticket.id %}">Delete</a>
 
             </div>
           </div>
@@ -100,16 +100,6 @@
                           <i class="material-icons">add</i>
                         </button>
                       </div>
-                      <form class="col-md-auto">
-                        <div class="input-group input-group-round">
-                          <div class="input-group-prepend">
-                            <span class="input-group-text">
-                              <i class="material-icons">filter_list</i>
-                            </span>
-                          </div>
-                          <input type="search" class="form-control filter-list-input" placeholder="Filter Comments" aria-label="Filter notes">
-                        </div>
-                      </form>
                     </div>
                     <!--end of content list head-->
                     <div class="content-list-body">
@@ -152,16 +142,6 @@
                           <i class="material-icons">add</i>
                         </button>
                       </div>
-                      <form class="col-md-auto">
-                        <div class="input-group input-group-round">
-                          <div class="input-group-prepend">
-                            <span class="input-group-text">
-                              <i class="material-icons">filter_list</i>
-                            </span>
-                          </div>
-                          <input type="search" class="form-control filter-list-input" placeholder="Filter files" aria-label="Filter Tasks">
-                        </div>
-                      </form>
                     </div>
                     <!--end of content list head-->
                     <div class="content-list-body row">
@@ -218,16 +198,6 @@
                           <i class="material-icons">add</i>
                         </button>
                       </div>
-                      <form class="col-md-auto">
-                        <div class="input-group input-group-round">
-                          <div class="input-group-prepend">
-                            <span class="input-group-text">
-                              <i class="material-icons">filter_list</i>
-                            </span>
-                          </div>
-                          <input type="search" class="form-control filter-list-input" placeholder="Filter members" aria-label="Filter Members">
-                        </div>
-                      </form>
                     </div>
                     <!--end of content list head-->
                     <div class="content-list-body row">
@@ -264,16 +234,6 @@
                       <div class="col-auto">
                         <h3>Activity</h3>
                       </div>
-                      <form class="col-md-auto">
-                        <div class="input-group input-group-round">
-                          <div class="input-group-prepend">
-                            <span class="input-group-text">
-                              <i class="material-icons">filter_list</i>
-                            </span>
-                          </div>
-                          <input type="search" class="form-control filter-list-input" placeholder="Filter activity" aria-label="Filter activity">
-                        </div>
-                      </form>
                     </div>
                     <!--end of content list head-->
                     <div class="content-list-body">
