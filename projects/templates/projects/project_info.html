@@ -117,18 +117,27 @@
                                 </a>
                               </div>
                               <ul class="avatars">
-                                {% for member in ticket.developers.all %}
+                                
                                   <li>
-                                    <a href="{% url 'user-profile' member.id %}" data-toggle="tooltip" title="{{ member.username }}">
-                                      <img alt="{{ member.username }}" class="avatar" src="{{ member.profile.image.url }}" data-filter-by="alt" />
-                                    </a>
+                                    <a href=""></a>
+                                    {% for member in ticket.developers.all %}
+                                      <a href="{% url 'user-profile' member.id %}" data-toggle="tooltip" title="{{ member.username }}">
+                                        <img alt="{{ member.username }}" class="avatar" src="{{ member.profile.image.url }}" data-filter-by="alt" />
+                                      </a>
+                                    {% endfor %}
                                   </li>
-                                {% endfor %}
+                                
                               </ul>
                               <div class="card-meta d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
-                                  
+                                  {% if ticket.priority == 'High' %}
+                                    <span class="text-danger"> <b>{{ ticket.priority }}</b> <span class="text-danger">!</span></span>
+                                  {% else %}
+                                    <span class=""> {{ ticket.priority }}</span>
+                                  {% endif %}
+
                                 </div>
+
                                 <span class="text-small" data-filter-by="text">Due {{ ticket.deadline }}</span>
                               </div>
                             </div>
