@@ -11,17 +11,17 @@
               <li class="breadcrumb-item active" aria-current="page">Team</li>
             </ol>
           </nav>
+          {% if request.user.membership.role == 'Admin' %}
+            <div class="dropdown">
+              <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
+                <i class="material-icons">settings</i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right">
 
-          <div class="dropdown">
-            <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
-              <i class="material-icons">settings</i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-
-              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#team-manage-modal">Edit Team</a>
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#team-manage-modal">Edit Team</a>
+              </div>
             </div>
-          </div>
-
+          {% endif %}
         </div>
         <div class="container">
           <div class="row justify-content-center">
@@ -80,16 +80,18 @@
                               <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <div class="card-body">
-                              <div class="dropdown card-options">
-                                <button class="btn-options" type="button" id="project-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  <i class="material-icons">more_vert</i>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                  <a class="dropdown-item" href="{% url 'project-update' project.id %}">Edit</a>
-                                  <div class="dropdown-divider"></div>
-                                  <a class="dropdown-item text-danger" href="{% url 'project-delete' project.id %}">Delete</a>
+                              {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' %}
+                                <div class="dropdown card-options">
+                                  <button class="btn-options" type="button" id="project-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">more_vert</i>
+                                  </button>
+                                  <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="{% url 'project-update' project.id %}">Edit</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" href="{% url 'project-delete' project.id %}">Delete</a>
+                                  </div>
                                 </div>
-                              </div>
+                              {% endif %}
                               <div class="card-title">
                                 <a href="{% url 'project-info' project.id %}">
                                   <h5 data-filter-by="text">{{ project.name }}</h5>
@@ -162,18 +164,20 @@
                               <span data-filter-by="text" class="text-body">{{ member.membership.role }}</span>
                             </div>
                           </a>
-                          <div class="card-body">
-                              <div class="dropdown card-options">
-                                <button class="btn-options" type="button" id="project-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  <i class="material-icons">more_vert</i>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                  <a class="dropdown-item" href="{% url 'membership-update' member.membership.id %}">Edit Role</a>
-                                  <div class="dropdown-divider"></div>
-                                  <a class="dropdown-item text-danger" href="{% url 'membership-delete' member.membership.id %}" >Remove</a>
+                          {% if request.user.membership.role == 'Admin' %}
+                            <div class="card-body">
+                                <div class="dropdown card-options">
+                                  <button class="btn-options" type="button" id="project-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">more_vert</i>
+                                  </button>
+                                  <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="{% url 'membership-update' member.membership.id %}">Edit Role</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" href="{% url 'membership-delete' member.membership.id %}" >Remove</a>
+                                  </div>
                                 </div>
-                              </div>
-                          </div>
+                            </div>
+                          {% endif %}
                         </div>
                       {% endfor%}
 
