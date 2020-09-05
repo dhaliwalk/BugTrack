@@ -56,9 +56,11 @@
                     <div class="row content-list-head">
                       <div class="col-auto">
                         <h3>Projects</h3>
-                        <button class="btn btn-round" data-toggle="modal" data-target="#project-add-modal">
-                          <i class="material-icons">add</i>
-                        </button>
+                        {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' %}
+                          <button class="btn btn-round" data-toggle="modal" data-target="#project-add-modal">
+                            <i class="material-icons">add</i>
+                          </button>
+                        {% endif %}
                       </div>
                       <form method="GET" class="col-md-auto">
                         <div class="input-group input-group-round">

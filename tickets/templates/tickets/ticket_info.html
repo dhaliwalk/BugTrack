@@ -15,20 +15,20 @@
               <li class="breadcrumb-item active" aria-current="page">Ticket</li>
             </ol>
           </nav>
-
-          <div class="dropdown">
-            <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
-              <i class="material-icons">settings</i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-
-              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#project-edit-modal">Edit Ticket</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item text-danger" href="{% url 'ticket-delete' ticket.id %}">Delete</a>
-
+          {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' or request.user.membership.role == 'Developer' or ticket.submitter == request.user %}
+            <div class="dropdown">
+              <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
+                <i class="material-icons">settings</i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#project-edit-modal">Edit Ticket</a>
+                {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' %}
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item text-danger" href="{% url 'ticket-delete' ticket.id %}">Delete</a>
+                {% endif %}
+              </div>
             </div>
-          </div>
-
+          {% endif %}
         </div>
         <div class="container">
           <div class="row justify-content-center">
@@ -69,9 +69,12 @@
                     {% endfor %}
 
                   </ul>
-                  <button class="btn btn-round" data-toggle="modal" data-target="#user-manage-modal">
-                    <i class="material-icons">add</i>
-                  </button>
+                  </nav>
+                  {% if request.user.membership.role == 'Admin'%}
+                    <button class="btn btn-round" data-toggle="modal" data-target="#user-manage-modal">
+                      <i class="material-icons">add</i>
+                    </button>
+                  {% endif %}
                 </div>
                 
               </div>
@@ -114,15 +117,19 @@
                           </div>
                           <div class="d-flex align-items-center">
                             <span data-filter-by="text">{{ comment.date_created }}</span>
-                            <div class="ml-1 dropdown card-options">
-                              <button class="btn-options" type="button" id="note-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="material-icons">more_vert</i>
-                              </button>
-                              <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="{% url 'comment-update' comment.id %}">Edit</a>
-                                <a class="dropdown-item text-danger" href="#">Delete</a>
+                            {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' or request.user == comment.author %}
+                              <div class="ml-1 dropdown card-options">
+                                <button class="btn-options" type="button" id="note-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <i class="material-icons">more_vert</i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                  {% if request.user == comment.author or request.user.membership.role == 'Admin' %}
+                                    <a class="dropdown-item" href="{% url 'comment-update' comment.id %}">Edit</a>
+                                  {% endif %}
+                                  <a class="dropdown-item text-danger" href="#">Delete</a>
+                                </div>
                               </div>
-                            </div>
+                            {% endif %}
                           </div>
                         </div>
                         <div class="card-body" data-filter-by="text">
@@ -163,21 +170,24 @@
                                 </ul>
                                 <div class="media-body d-flex justify-content-between align-items-center">
                                   <div>
-                                    <a href="#" data-filter-by="text">{{ attachment.title }}</a>
+                                    <a href="{{ attachment.file.url }}" data-filter-by="text">{{ attachment.title }}</a>
                                     <br>
                                     <span class="text-small" data-filter-by="text">{{ attachment.description }}</span>
                                   </div>
-                                  <div class="dropdown">
-                                    <button class="btn-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                      <i class="material-icons">more_vert</i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                      <a class="dropdown-item" href="#">Download</a>
-                                      <a class="dropdown-item" href="#">Share</a>
-                                      <div class="dropdown-divider"></div>
-                                      <a class="dropdown-item text-danger" href="#">Delete</a>
+                                  {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' or request.user == attachment.poster %}
+                                    <div class="dropdown">
+                                      <button class="btn-options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="material-icons">more_vert</i>
+                                      </button>
+                                      <div class="dropdown-menu dropdown-menu-right">
+                                        {% if request.user == attachment.poster or request.user.membership.role == 'Admin' %}
+                                          <a class="dropdown-item" href="{% url 'attachment-update' attachment.id %}">Edit</a>
+                                          <div class="dropdown-divider"></div>
+                                        {% endif %}
+                                        <a class="dropdown-item text-danger" href="{% url 'attachment-delete' attachment.id %}">Delete</a>
+                                      </div>
                                     </div>
-                                  </div>
+                                  {% endif %}
                                 </div>
                               </div>
                             </li>
@@ -194,9 +204,11 @@
                     <div class="row content-list-head">
                       <div class="col-auto">
                         <h3>Members</h3>
-                        <button class="btn btn-round" data-toggle="modal" data-target="#user-manage-modal">
-                          <i class="material-icons">add</i>
-                        </button>
+                        {% if request.user.membership.role == 'Admin' %}
+                          <button class="btn btn-round" data-toggle="modal" data-target="#user-manage-modal">
+                            <i class="material-icons">add</i>
+                          </button>
+                        {% endif %}
                       </div>
                     </div>
                     <!--end of content list head-->
@@ -210,18 +222,20 @@
                               <span data-filter-by="text" class="text-body">{{ developer.user.membership.role }}</span>
                             </div>
                           </a>
-                          <div class="card-body">
-                              <div class="dropdown card-options">
-                                <button class="btn-options" type="button" id="project-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  <i class="material-icons">more_vert</i>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                  <a class="dropdown-item" href="{% url 'membership-update' developer.user.membership.id %}">Edit Role</a>
-                                  <div class="dropdown-divider"></div>
-                                  <a class="dropdown-item text-danger" href="{% url 'ticketdev-delete' developer.id %}" >Remove</a>
+                          {% if request.user.membership.role == 'Admin' %}
+                            <div class="card-body">
+                                <div class="dropdown card-options">
+                                  <button class="btn-options" type="button" id="project-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="material-icons">more_vert</i>
+                                  </button>
+                                  <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="{% url 'membership-update' developer.user.membership.id %}">Edit Role</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" href="{% url 'ticketdev-delete' developer.id %}" >Remove</a>
+                                  </div>
                                 </div>
-                              </div>
-                          </div>
+                            </div>
+                          {% endif %}
                         </div>
                       {% endfor %}
                     </div>
