@@ -126,7 +126,7 @@
                                   {% if request.user == comment.author or request.user.membership.role == 'Admin' %}
                                     <a class="dropdown-item" href="{% url 'comment-update' comment.id %}">Edit</a>
                                   {% endif %}
-                                  <a class="dropdown-item text-danger" href="#">Delete</a>
+                                  <a class="dropdown-item text-danger" href="{% url 'comment-delete' comment.id %}">Delete</a>
                                 </div>
                               </div>
                             {% endif %}
