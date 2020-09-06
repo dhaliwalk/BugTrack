@@ -56,7 +56,7 @@
                     <div class="row content-list-head">
                       <div class="col-auto">
                         <h3>Projects</h3>
-                        {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' %}
+                        {% if request.user.membership.role == 'Admin'%}
                           <button class="btn btn-round" data-toggle="modal" data-target="#project-add-modal">
                             <i class="material-icons">add</i>
                           </button>
@@ -116,13 +116,13 @@
                                   </li>
                                 {% endif %}
                               </ul>
-                              <!-- <div class="card-meta d-flex justify-content-between">
+                              <div class="card-meta d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
-                                  <i class="material-icons mr-1">playlist_add_check</i>
-                                  <span class="text-small">6/10</span>
+                                  <!-- <i class="material-icons mr-1">playlist_add_check</i>
+                                  <span class="text-small">6/10</span> -->
                                 </div>
-                                <span class="text-small" data-filter-by="text">Due 4 days</span>
-                              </div> -->
+                                <span class="text" data-filter-by="text"><b>Number of Tickets:</b> {{ project.ticket_set.count }}</span>
+                              </div>
                             </div>
                           </div>
                           

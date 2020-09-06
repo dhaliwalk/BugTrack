@@ -144,7 +144,7 @@ class ProjectUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 
 	def test_func(self):
 		project = self.get_object()
-		if self.request.user.membership.team.project_set.filter(pk=project.id).exists() and self.request.user.membership.role == 'Admin':
+		if self.request.user.membership.team.project_set.filter(pk=project.id).exists() and (self.request.user.membership.role == 'Admin' or self.request.user.membership.role == 'Project Manager'):
 			return True
 		return False
 
@@ -156,7 +156,7 @@ class ProjectDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 	
 	def test_func(self):
 		project = self.get_object()
-		if self.request.user.membership.team.project_set.filter(pk=project.id).exists() and self.request.user.membership.role == 'Admin':
+		if self.request.user.membership.team.project_set.filter(pk=project.id).exists() and (self.request.user.membership.role == 'Admin' or self.request.user.membership.role == 'Project Manager'):
 			return True
 		return False
 
@@ -197,7 +197,7 @@ class ProjectMemberDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteVie
 
 	def test_func(self):
 		project = self.get_object().project
-		if self.request.user.membership.team.project_set.filter(pk=project.id).exists() and self.request.user.membership.role == 'Admin':
+		if self.request.user.membership.team.project_set.filter(pk=project.id).exists() and (self.request.user.membership.role == 'Admin' or self.request.user.membership.role == 'Project Manager'):
 			return True
 		return False
 
