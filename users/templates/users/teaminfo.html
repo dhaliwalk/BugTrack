@@ -33,9 +33,9 @@
                   <ul class="avatars">
                     {% for member in members %}
                       <li>
-                        <p data-toggle="tooltip" data-placement="top" title="{{ member.username }}">
+                        <a href="{% url 'user-profile' member.id %}" data-toggle="tooltip" data-placement="top" title="{{ member.username }}">
                           <img alt="{{ member.username }}" class="avatar" src="{{ member.profile.image.url }}" />
-                        </p>
+                        </a>
                       </li>
                     {% endfor %}
                   </ul>
@@ -70,9 +70,9 @@
                             </span>
                           </div>
                           {% if query == None %}
-                            <input type="search" class="form-control filter-list-input" placeholder="Filter Tickets" name="query">
+                            <input type="search" class="form-control filter-list-input" placeholder="Filter Projects" name="query">
                           {% else %}
-                            <input value="{{ query }}" type="search" class="form-control filter-list-input" placeholder="Filter Tickets" name="query">
+                            <input value="{{ query }}" type="search" class="form-control filter-list-input" placeholder="Filter Projects" name="query">
                           {% endif %}
                         </div>
                       </form>

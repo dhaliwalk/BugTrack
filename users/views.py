@@ -149,7 +149,14 @@ def TeamList(request):
 	projects = paginator.get_page(page_number)
 	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'projects': projects, 'form': form, 'update_form': update_form, 'query': query})
 	
-
+def MembersList(request):
+	members = request.user.membership.team.members.all()
+	query = request.GET.get('query')
+	if query != None:
+		members = members.filter(Q(username__contains=query) | Q(email__contains=query))
+	if query == '':
+		members = request.user.membership.team.members.all()
+	return render(request, 'users/members_list.html', {'members': members})
 
 
 # def TeamJoin(request):	

@@ -43,7 +43,7 @@
               <li class="nav-item">
 
                 <a class="nav-link" href="{% url 'home' %}">Dashboard</a>
-
+                <a class="nav-link" href="{% url 'tickets' %}">My Tickets</a>
               </li>
 
               <li class="nav-item">
@@ -55,27 +55,15 @@
                     <li class="nav-item">
                       <a class="nav-link" href="{% url 'team-list' %}">Team</a>
                     </li>
-
-                  </ul>
-                </div>
-
-              </li>
-
-              <li class="nav-item">
-
-                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-3" aria-controls="submenu-3">Projects</a>
-                <div id="submenu-3" class="collapse">
-                  <ul class="nav nav-small flex-column">
-
                     <li class="nav-item">
-                      <a class="nav-link" href="{% url 'project-list' %}">Projects</a>
-                      <a class="nav-link" href="{% url 'tickets' %}">My Tickets</a>
+                      <a class="nav-link" href="{% url 'members-list' %}">Team Members</a>
                     </li>
 
                   </ul>
                 </div>
 
               </li>
+
 
             </ul>
             <hr>
@@ -86,7 +74,7 @@
                   <a href="{% url 'team-list' %}" class="nav-link">Team Overview</a>
                 </li>
                 <li class="nav-item">
-                  <a href="{% url 'tickets' %}" class="nav-link">My Tickets</a>
+                  <a href="{% url 'profile' %}" class="nav-link">My Profile</a>
                 </li>
               </ul>
               <hr>

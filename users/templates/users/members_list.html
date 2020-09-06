@@ -1,0 +1,84 @@
+{% extends "main/index.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+      <div class="main-container">
+
+        <div class="navbar bg-white breadcrumb-bar">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">Members List</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-11 col-xl-10">
+              <div class="page-header">
+                <h1 class="justify-content-center">"{{ request.user.membership.team.name }}" Members</h1>
+                <form class="col-md-auto">
+                  <div class="input-group input-group-round">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">filter_list</i>
+                      </span>
+                    </div>
+                    {% if query == None %}
+                      <input type="search" class="form-control filter-list-input" placeholder="Filter Members" name="query">
+                    {% else %}
+                      <input value="{{ query }}" type="search" class="form-control filter-list-input" placeholder="Filter Members" name="query">
+                    {% endif %}
+                  </div>
+                </form>
+              </div>
+              <hr>
+              <div class="content">
+                <div class="" id="members" role="tabpanel" data-filter-list="content-list-body">
+                                  <div class="content-list">
+                                    <!--end of content list head-->
+                                    <div class="content-list-body row">
+                                      {% for member in members %}
+                                        <div class="col-6">
+                                          <a class="media media-member" href="{% url 'user-profile' member.id %}">
+                                            <img alt="{{ member.username }}" src="{{ member.profile.image.url }}" class="avatar avatar-lg" />
+                                            <div class="media-body">
+                                              <h6 class="mb-0" data-filter-by="text">{{ member.username }}</h6>
+                                              <h6 class="mb-0 text-body" data-filter-by="text">{{ member.email }}</h6>
+                                              <span data-filter-by="text" class="text-body">{{ member.membership.role }}</span>
+
+                                            </div>
+                                          </a>
+                                          {% if request.user.membership.role == 'Admin' %}
+                                            <div class="card-body">
+                                                <div class="dropdown card-options">
+                                                  <button class="btn-options" type="button" id="project-dropdown-button-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i class="material-icons">more_vert</i>
+                                                  </button>
+                                                  <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="{% url 'membership-update' member.membership.id %}">Edit Role</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item text-danger" href="{% url 'membership-delete' member.membership.id %}" >Remove</a>
+                                                  </div>
+                                                </div>
+                                            </div>
+                                          {% endif %}
+                                        </div>
+                                      {% endfor%}
+
+                                    </div>
+                                  </div>
+                                  <!--end of content list-->
+                                </div>
+              </div>
+                
+                <!--end of tab-->
+                
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock content %}

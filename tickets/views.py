@@ -9,8 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import TicketUpdateForm, TicketDevCreateForm, CommentCreateForm, AttachmentCreateForm
 from django.forms.models import model_to_dict
 from django import forms
-from django.db.models import Q
-from django.db.models import Case, Value, When, IntegerField
+from django.db.models import Q, Case, Value, When, IntegerField
 
 def TicketInfo(request, pk=None):
 	if pk:
