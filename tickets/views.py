@@ -10,7 +10,7 @@ from .forms import TicketUpdateForm, TicketDevCreateForm, CommentCreateForm, Att
 from django.forms.models import model_to_dict
 from django import forms
 from django.db.models import Q
-
+from django.db.models import Case, Value, When, IntegerField
 
 def TicketInfo(request, pk=None):
 	if pk:
@@ -111,12 +111,13 @@ def TicketInfo(request, pk=None):
 
 def my_tickets(request):
 	tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
-	
+	tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), output_field=IntegerField(),)).order_by('custom_order')
 	query = request.GET.get('query')
 	if query != None:
 		tickets = tickets.filter(title__contains=query)
 	if query == '':
 		tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
+		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), output_field=IntegerField(),)).order_by('custom_order')
 
 	paginator = Paginator(tickets, 12)
 	page_number = request.GET.get('page')
