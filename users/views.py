@@ -156,7 +156,7 @@ def MembersList(request):
 		members = members.filter(Q(username__contains=query) | Q(email__contains=query))
 	if query == '':
 		members = request.user.membership.team.members.all()
-	return render(request, 'users/members_list.html', {'members': members})
+	return render(request, 'users/members_list.html', {'members': members, 'query': query})
 
 
 # def TeamJoin(request):	

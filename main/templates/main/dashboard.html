@@ -1,4 +1,150 @@
 {% extends "main/index.html" %}
 {% block content %}
-	<h1>Welcome to BugTrack {{ request.user.username }}</h1>
+	<div class="main-container">
+
+        <div class="navbar bg-white breadcrumb-bar">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item active" aria-current="page">Home</li>
+            </ol>
+          </nav>
+
+          <div class="dropdown">
+            <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
+              <i class="material-icons">settings</i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+
+              <a class="dropdown-item" href="#">Account Settings</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="#">Log out</a>
+
+            </div>
+          </div>
+
+        </div>
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-11 col-xl-10">
+              <div class="page-header mb-4">
+                <div class="media">
+                  <img alt="Image" src="{{ request.user.profile.image.url }}" class="avatar avatar-lg mt-1" />
+                  <div class="media-body ml-3">
+                    <h1 class="mb-0">{{ request.user.username }}</h1>
+                    <p class="lead">Overview</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content">
+                <div class="tab-pane fade show active" id="tasks" role="tabpanel" data-filter-list="card-list-body">
+                  
+                  <!--end of content list head-->
+                  <div class="content-list-body row">
+
+                        <div class="col-lg-6">
+                          <div class="card card-project">
+                            
+                            <div class="card-body">
+                              
+                              <div class="card-title">
+                                <h5 class="text-center" data-filter-by="text">Tickets by Priority</h5>
+                              </div>
+                              
+                              <div class="card-meta d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                  <h6>High:</h6>
+                                </div>
+                                <h6>Medium:</h6>
+                              </div>
+                              <div class="card-meta d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                  <h6>Low:</h6>
+                                </div>
+                                <h6>None:</h6>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                          <div class="card card-project">
+                            
+                            <div class="card-body">
+                              <div class="card-title">
+                                <h5 class="text-center" data-filter-by="text">Tickets by Status</h5>
+                              </div>
+                              
+                              <div class="card-meta d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                  <h6>Open/In Progress:</h6>
+                                </div>
+                                <h6>Closed/Resolved:</h6>
+                              </div>
+                              <div class="card-meta d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                  <h6>Waiting on More Info:</h6>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-6">
+                          <div class="card card-project">
+                            
+                            <div class="card-body">
+                              
+                              <div class="card-title">
+                                <a href="#">
+                                  <h5 data-filter-by="text">Title</h5>
+                                </a>
+                              </div>
+                              
+                              <div class="card-meta d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                  <!-- {% if ticket.priority == 'High' %}
+                                    <span class="text-danger"> <b>{{ ticket.priority }}</b> <span class="text-danger">!</span></span>
+                                  {% else %}
+                                    <span class=""> {{ ticket.priority }}</span>
+                                  {% endif %} -->
+
+                                </div>
+
+                                <span class="text-small" data-filter-by="text">Due </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-6 ">
+                          <div class="card card-project">
+                            
+                            <div class="card-body">
+                              
+                              <div class="card-title">
+                                <a href="#">
+                                  <h5 data-filter-by="text">Title</h5>
+                                </a>
+                              </div>
+                              
+                              <div class="card-meta d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                  
+
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
+                    </div>
+                  <!--end of content list-->
+                </div>
+                <!--end of tab-->
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
 {% endblock content %}
