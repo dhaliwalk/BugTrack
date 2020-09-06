@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import TicketUpdateForm, TicketDevCreateForm, CommentCreateForm, AttachmentCreateForm
 from django.forms.models import model_to_dict
 from django import forms
-
+from django.db.models import Q
 
 
 def TicketInfo(request, pk=None):
@@ -110,11 +110,19 @@ def TicketInfo(request, pk=None):
 
 
 def my_tickets(request):
-	tickets = Ticket.objects.filter(submitter=request.user).order_by('-date_updated')
-	paginator = Paginator(tickets, 5)
+	tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
+	
+	query = request.GET.get('query')
+	if query != None:
+		tickets = tickets.filter(title__contains=query)
+	if query == '':
+		tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
+
+	paginator = Paginator(tickets, 12)
 	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
-	return render(request, 'tickets/my_tickets.html', {'page_obj':page_obj})
+	tickets = paginator.get_page(page_number)
+
+	return render(request, 'tickets/my_tickets.html', {'tickets':tickets, 'query': query})
 
 class TicketCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 	model = Ticket

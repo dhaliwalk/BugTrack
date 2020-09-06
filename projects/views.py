@@ -111,7 +111,8 @@ def ProjectInfo(request, pk=None):
 			{'member_form': member_form,'u_form': u_form, 'form': form, 'project':project,  
 			'tickets': tickets,
 			'members': members,
-			'history_list': history_list})
+			'history_list': history_list,
+			'query': query})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 

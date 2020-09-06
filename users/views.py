@@ -147,7 +147,7 @@ def TeamList(request):
 	paginator = Paginator(projects, 12)
 	page_number = request.GET.get('page')
 	projects = paginator.get_page(page_number)
-	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'projects': projects, 'form': form, 'update_form': update_form})
+	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'projects': projects, 'form': form, 'update_form': update_form, 'query': query})
 	
 
 

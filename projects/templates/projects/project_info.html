@@ -80,7 +80,11 @@
                             <i class="material-icons">filter_list</i>
                           </span>
                         </div>
-                        <input type="search" class="form-control filter-list-input" placeholder="Filter Tickets" name="query">
+                        {% if query == None %}
+                          <input type="search" class="form-control filter-list-input" placeholder="Filter Tickets" name="query">
+                        {% else %}
+                          <input value="{{ query }}" type="search" class="form-control filter-list-input" placeholder="Filter Tickets" name="query">
+                        {% endif %}
                       </div>
                     </form>
                   </div>
@@ -117,16 +121,19 @@
                                 </a>
                               </div>
                               <ul class="avatars">
-                                
-                                  <li>
-                                    <a href=""></a>
-                                    {% for member in ticket.developers.all %}
+                                {% if ticket.developers.all %}
+                                  {% for member in ticket.developers.all %}
+                                    <li>                                
                                       <a href="{% url 'user-profile' member.id %}" data-toggle="tooltip" title="{{ member.username }}">
                                         <img alt="{{ member.username }}" class="avatar" src="{{ member.profile.image.url }}" data-filter-by="alt" />
-                                      </a>
-                                    {% endfor %}
+                                      </a>   
+                                    </li>
+                                  {% endfor %}
+                                {% else %}
+                                  <li>
+                                    <a href=""></a>
                                   </li>
-                                
+                                {% endif %}
                               </ul>
                               <div class="card-meta d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
