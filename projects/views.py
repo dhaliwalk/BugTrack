@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from tickets.models import History
 from django.forms.models import model_to_dict
 from django.db.models import Case, Value, When, IntegerField
+from datetime import datetime
 
 def list(request):
 	user = request.user
@@ -41,9 +42,10 @@ def list(request):
 def ProjectInfo(request, pk=None):
 	if pk:
 		project = Project.objects.get(pk=pk)
+	date = datetime.today().date()
 	members = ProjectMember.objects.filter(project=project)
 	tickets = project.ticket_set.all().order_by('-date_created')
-	tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), output_field=IntegerField(),)).order_by('custom_order')
+	tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order')
 	history_list = project.projecthistory_set.all().order_by('-date_changed')
 	old_project = model_to_dict(project).items()
 	query = request.GET.get('query')
@@ -102,8 +104,7 @@ def ProjectInfo(request, pk=None):
 		tickets = tickets.filter(title__contains=query)
 	if query == '':
 		tickets = project.ticket_set.all().order_by('-date_created')
-		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), output_field=IntegerField(),)).order_by('custom_order')
-
+		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order')
 	paginator = Paginator(tickets, 12)
 	page_number = request.GET.get('page')
 	tickets = paginator.get_page(page_number)
@@ -114,7 +115,8 @@ def ProjectInfo(request, pk=None):
 			'tickets': tickets,
 			'members': members,
 			'history_list': history_list,
-			'query': query})
+			'query': query,
+			'date': date})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 

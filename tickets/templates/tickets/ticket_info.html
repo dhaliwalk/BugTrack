@@ -36,28 +36,7 @@
               <div class="page-header">
                 <h1>{{ ticket.title }}</h1>
                 <p class="lead">{{ ticket.description }}</p>
-                <div class="form-group row align-items-center">
-                  <label class="col">Priority:</label>
-                  <div class="col">
-                    <span class="h6" data-filter-by="text">{{ ticket.priority }}</span>
-                  </div>
-                  <label class="col">Status:</label>
-                  <div class="col">
-                    <span class="h6" data-filter-by="text">{{ ticket.status }}</span>
-                  </div>
-                  <label class="col">Ticket Type:</label>
-                  <div class="col">
-                    <span class="h6" data-filter-by="text">{{ ticket.ticket_type }}</span>
-                  </div>
-                  <label class="col">Deadline:</label>
-                  <div class="col">
-                    <span class="h6" data-filter-by="text">{{ ticket.deadline }}</span>
-                  </div>
-                  <label class="col">Submitter:</label>
-                  <div class="col">
-                    <span class="h6" data-filter-by="text">{{ ticket.submitter.username }}</span>
-                  </div>
-                </div>
+                
                 <div class="d-flex align-items-center">
                   <ul class="avatars">
                     {% for developer in developers %}
@@ -413,9 +392,83 @@
 
             </div>
           </div>
+
         </div>
 
       </div>
+      <div class="sidebar " id="sidebar">
+        <div class="sidebar-content">
+          <div class="chat-team-sidebar text-small">
+            <div class="chat-team-sidebar-top">
+              <div class="media align-items-center">
+                
+                <div class="media-body">
+                  <h5 class="mb-1"> Ticket Info </h5>
+                </div>
+              </div>
+              
+            </div>
+            <div class="chat-team-sidebar-bottom">
+              <div class="tab-content">
+                <div class="tab-pane fade show active" data-filter-list="list-group">
+                    <a class="list-group-item list-group-item-action" href="#">
+                      <div class="media media-member mb-0">
+                        <div class="media-body">
+                          <h6 class="mb-0" data-filter-by="text">Priority:</h6>
+                          <span data-filter-by="text">{{ ticket.priority }}</span>
+                        </div>
+                      </div>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" href="#">
+                      <div class="media media-member mb-0">
+                        <div class="media-body">
+                          <h6 class="mb-0" data-filter-by="text">Status:</h6>
+                          <span data-filter-by="text">{{ ticket.status }}</span>
+                        </div>
+                      </div>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" href="#">
+                      <div class="media media-member mb-0">
+                        <div class="media-body">
+                          <h6 class="mb-0" data-filter-by="text">Ticket Type:</h6>
+                          <span data-filter-by="text">{{ ticket.ticket_type }}</span>
+                        </div>
+                      </div>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" href="#">
+                      <div class="media media-member mb-0">
+                        <div class="media-body">
+                          <h6 class="mb-0" data-filter-by="text">Deadline:</h6>
+                          {% if date > ticket.deadline %}
+                            <span data-filter-by="text" class="text-danger">{{ ticket.deadline }}</span>
+                          {% else %}
+                            <span data-filter-by="text">{{ ticket.deadline }}</span>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </a>
+
+                    <a class="list-group-item list-group-item-action" href="#">
+                      <div class="media media-member mb-0">
+                        <div class="media-body">
+                          <h6 class="mb-0" data-filter-by="text">Submitter:</h6>
+                          <span data-filter-by="text">{{ ticket.submitter }}</span>
+                        </div>
+                      </div>
+                    </a>
+
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
 
 {% endblock content%}

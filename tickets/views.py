@@ -10,10 +10,12 @@ from .forms import TicketUpdateForm, TicketDevCreateForm, CommentCreateForm, Att
 from django.forms.models import model_to_dict
 from django import forms
 from django.db.models import Q, Case, Value, When, IntegerField
+from datetime import datetime
 
 def TicketInfo(request, pk=None):
 	if pk:
 		ticket = Ticket.objects.get(pk=pk)
+	date = datetime.today().date()
 	comments = ticket.comment_set.all().order_by('-date_created')
 	history_list = ticket.history_set.all().order_by('-date_changed')
 	attachments = ticket.attachment_set.all().order_by('-date_created')
@@ -103,26 +105,27 @@ def TicketInfo(request, pk=None):
 		u_form.fields['user'].queryset = (ticket.project.members).exclude(id__in=current_ticketdevs_ids)
 
 	if request.user.membership.team.project_set.filter(pk=ticket.project.id).exists():
-		return render(request, 'tickets/ticket_info.html', {'file_form': file_form, 'comment_form': comment_form, 'u_form':u_form, 'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers})
+		return render(request, 'tickets/ticket_info.html', {'file_form': file_form, 'comment_form': comment_form, 'u_form':u_form, 'form':form, 'comments': comments, 'ticket':ticket, 'history_list': history_list, 'attachments': attachments, 'developers': developers, 'date':date})
 	else:
 		return HttpResponse('<h1>Not authorized to view this page</h1>')
 
 
 def my_tickets(request):
 	tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
-	tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), output_field=IntegerField(),)).order_by('custom_order')
+	tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order')
 	query = request.GET.get('query')
 	if query != None:
 		tickets = tickets.filter(title__contains=query)
 	if query == '':
 		tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
-		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), output_field=IntegerField(),)).order_by('custom_order')
+		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order')
 
 	paginator = Paginator(tickets, 12)
 	page_number = request.GET.get('page')
 	tickets = paginator.get_page(page_number)
+	date = datetime.today().date()
 
-	return render(request, 'tickets/my_tickets.html', {'tickets':tickets, 'query': query})
+	return render(request, 'tickets/my_tickets.html', {'tickets':tickets, 'query': query, 'date': date})
 
 class TicketCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 	model = Ticket
