@@ -9,29 +9,16 @@
             </ol>
           </nav>
 
-          <div class="dropdown">
-            <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
-              <i class="material-icons">settings</i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-
-              <a class="dropdown-item" href="#">Account Settings</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item text-danger" href="#">Log out</a>
-
-            </div>
-          </div>
-
         </div>
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-lg-11 col-xl-10">
               <div class="page-header mb-4">
                 <div class="media">
-                  <img alt="Image" src="{{ request.user.profile.image.url }}" class="avatar avatar-lg mt-1" />
+                  
                   <div class="media-body ml-3">
-                    <h1 class="mb-0">{{ request.user.username }}</h1>
-                    <p class="lead">Overview</p>
+                    <h1 class="mb-0 row justify-content-center">Dashboard</h1>
+                    <p class="lead row justify-content-center">Overview of Tickets</p>
                   </div>
                 </div>
               </div>
@@ -52,15 +39,15 @@
                               
                               <div class="card-meta d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
-                                  <h6>High:</h6>
+                                  <h6 class="text-danger">High: {{ ticket_high_count }}</h6>
                                 </div>
-                                <h6>Medium:</h6>
+                                <h6 class="text-info">Medium: {{ ticket_medium_count }}</h6>
                               </div>
                               <div class="card-meta d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
-                                  <h6>Low:</h6>
+                                  <h6 class="text-warning">Low: {{ ticket_low_count }}</h6>
                                 </div>
-                                <h6>None:</h6>
+                                <h6>None: {{ ticket_none_count }}</h6>
                               </div>
                             </div>
                           </div>
@@ -76,65 +63,44 @@
                               
                               <div class="card-meta d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
-                                  <h6>Open/In Progress:</h6>
+                                  <h6>Open/In Progress: {{ ticket_open_progress_count }}</h6>
                                 </div>
-                                <h6>Closed/Resolved:</h6>
+                                <h6>Closed/Resolved: {{ ticket_closed_resolved_count }}</h6>
                               </div>
                               <div class="card-meta d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
-                                  <h6>Waiting on More Info:</h6>
+                                  <h6>Waiting on More Info: {{ ticket_waiting_count }}</h6>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div class="col-lg-6">
+
+                        <div class="col-lg-6 mx-auto">
                           <div class="card card-project">
                             
                             <div class="card-body">
                               
                               <div class="card-title">
-                                <a href="#">
-                                  <h5 data-filter-by="text">Title</h5>
-                                </a>
+                                <h5 class="text-center" data-filter-by="text">Tickets by Type</h5>
                               </div>
                               
                               <div class="card-meta d-flex justify-content-between">
                                 <div class="d-flex align-items-center">
-                                  <!-- {% if ticket.priority == 'High' %}
-                                    <span class="text-danger"> <b>{{ ticket.priority }}</b> <span class="text-danger">!</span></span>
-                                  {% else %}
-                                    <span class=""> {{ ticket.priority }}</span>
-                                  {% endif %} -->
-
+                                  <h6>New Feature: {{ ticket_new_feature_count }}</h6>
                                 </div>
-
-                                <span class="text-small" data-filter-by="text">Due </span>
+                                <h6>Bug: {{ ticket_bug_count }}</h6>
+                              </div>
+                              <div class="card-meta d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                  <h6>Improvement: {{ ticket_improvement_count }}</h6>
+                                </div>
+                                <h6>Task: {{ ticket_task_count }}</h6>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <div class="col-lg-6 ">
-                          <div class="card card-project">
-                            
-                            <div class="card-body">
-                              
-                              <div class="card-title">
-                                <a href="#">
-                                  <h5 data-filter-by="text">Title</h5>
-                                </a>
-                              </div>
-                              
-                              <div class="card-meta d-flex justify-content-between">
-                                <div class="d-flex align-items-center">
-                                  
-
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
 
 
                     </div>

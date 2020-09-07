@@ -17,6 +17,12 @@ class Ticket(models.Model):
 		("Low", "Low"),
 		("None", "None"),
 	]
+	type_choices = [
+		("Bug", "Bug"),
+		("New Feature", "New Feature"),
+		("Improvement", "Improvement"),
+		("Task", "Task"),
+	]
 	title = models.CharField(max_length=128)
 	description = models.CharField(max_length=500)
 	submitter = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -26,7 +32,7 @@ class Ticket(models.Model):
 	date_created = models.DateTimeField(auto_now_add=True)
 	date_updated = models.DateTimeField(auto_now=True)
 	deadline = models.DateField()
-	ticket_type = models.CharField(max_length=128)
+	ticket_type = models.CharField(max_length=128, choices=type_choices, default="Task")
 	developers = models.ManyToManyField(User, through='TicketDev', related_name='ticket_developers')
 
 	def __str__(self):
