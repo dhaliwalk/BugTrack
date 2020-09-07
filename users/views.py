@@ -150,12 +150,15 @@ def TeamList(request):
 	return render(request, 'users/teaminfo.html', {'team': team, 'members': members, 'projects': projects, 'form': form, 'update_form': update_form, 'query': query})
 	
 def MembersList(request):
-	members = request.user.membership.team.members.all()
+	members = request.user.membership.team.members.all().order_by('username')
 	query = request.GET.get('query')
 	if query != None:
-		members = members.filter(Q(username__contains=query) | Q(email__contains=query))
+		members = members.filter(Q(username__contains=query) | Q(email__contains=query)).order_by('username')
 	if query == '':
-		members = request.user.membership.team.members.all()
+		members = request.user.membership.team.members.all().order_by('username')
+	paginator = Paginator(members, 24)
+	page_number = request.GET.get('page')
+	members = paginator.get_page(page_number)
 	return render(request, 'users/members_list.html', {'members': members, 'query': query})
 
 
