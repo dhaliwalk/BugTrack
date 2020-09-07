@@ -153,7 +153,7 @@ def MembersList(request):
 	members = request.user.membership.team.members.all().order_by('username')
 	query = request.GET.get('query')
 	if query != None:
-		members = members.filter(Q(username__contains=query) | Q(email__contains=query)).order_by('username')
+		members = members.filter(Q(username__contains=query) | Q(email__contains=query)).order_by('username').distinct()
 	if query == '':
 		members = request.user.membership.team.members.all().order_by('username')
 	paginator = Paginator(members, 24)
