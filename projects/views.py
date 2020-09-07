@@ -14,20 +14,20 @@ from django.forms.models import model_to_dict
 from django.db.models import Case, Value, When, IntegerField
 from datetime import datetime
 
-def list(request):
-	user = request.user
-	role = user.membership.role
-	team = user.membership.team
-	if role == 'Admin':
-		projects = team.project_set.all().order_by('name')
-	else:
-		projects = team.project_set.filter(members=user).order_by('name')
+# def list(request):
+# 	user = request.user
+# 	role = user.membership.role
+# 	team = user.membership.team
+# 	if role == 'Admin':
+# 		projects = team.project_set.all().order_by('name')
+# 	else:
+# 		projects = team.project_set.filter(members=user).order_by('name')
 
-	paginator = Paginator(projects, 10)
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
+# 	paginator = Paginator(projects, 10)
+# 	page_number = request.GET.get('page')
+# 	page_obj = paginator.get_page(page_number)
 	
-	return render(request, 'projects/project_list.html', {'page_obj': page_obj, 'role': role})
+# 	return render(request, 'projects/project_list.html', {'page_obj': page_obj, 'role': role})
 
 # def ProjectJoin(request, pk=None):
 # 	if pk:

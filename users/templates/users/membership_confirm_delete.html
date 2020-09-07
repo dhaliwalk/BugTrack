@@ -1,5 +1,6 @@
 {% extends "main/index.html" %}
 {% load crispy_forms_tags %}
+{% block title %} BugTrack - Remove Member {% endblock title %}
 {% block content %}
 
 	<div class="main-container">
@@ -25,7 +26,7 @@
             <form method="POST">
 				{% csrf_token %}
 				<fieldset class="form-group">
-					<h2>Are you sure you want to remove the developer "{{ object.user.username }}"</h2>
+					<h2>Are you sure you want to remove the user "{{ object.user.username }}?"</h2>
 				</fieldset>
 				<div class="form-group">
 					<button class="btn btn-outline-danger" type="submit">Yes, Delete</button>

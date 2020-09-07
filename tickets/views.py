@@ -346,25 +346,25 @@ class TicketDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 			return True
 		return False
 
-class CommentCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
-	model = Comment
-	fields = ['message']
+# class CommentCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
+# 	model = Comment
+# 	fields = ['message']
 	
-	def get_success_url(self):
-		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
+# 	def get_success_url(self):
+# 		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
 	
-	def form_valid(self, form):
-		pk = self.kwargs['pk']
-		form.instance.ticket = Ticket.objects.get(pk=pk)
-		form.instance.author = self.request.user
-		History.objects.create(user=self.request.user, action=f"Created comment", old_value="", new_value=form.instance.message, ticket=form.instance.ticket, icon_type='add_comment')
-		return super().form_valid(form)
+# 	def form_valid(self, form):
+# 		pk = self.kwargs['pk']
+# 		form.instance.ticket = Ticket.objects.get(pk=pk)
+# 		form.instance.author = self.request.user
+# 		History.objects.create(user=self.request.user, action=f"Created comment", old_value="", new_value=form.instance.message, ticket=form.instance.ticket, icon_type='add_comment')
+# 		return super().form_valid(form)
 
-	def test_func(self):
-		ticket = Ticket.objects.get(pk= self.kwargs['pk'])
-		if self.request.user.ticket_set.filter(pk=ticket.id).exists() or (self.request.user.membership.team.project_set.filter(pk=ticket.team.id).exists() and self.request.user.membership.role == 'Admin'):
-			return True
-		return False
+# 	def test_func(self):
+# 		ticket = Ticket.objects.get(pk= self.kwargs['pk'])
+# 		if self.request.user.ticket_set.filter(pk=ticket.id).exists() or (self.request.user.membership.team.project_set.filter(pk=ticket.team.id).exists() and self.request.user.membership.role == 'Admin'):
+# 			return True
+# 		return False
 
 class CommentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Comment
@@ -405,25 +405,25 @@ class CommentDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 			return True
 		return False
 
-class AttachmentCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
-	model = Attachment
-	fields = ['title', 'description', 'file']
+# class AttachmentCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
+# 	model = Attachment
+# 	fields = ['title', 'description', 'file']
 	
-	def get_success_url(self):
-		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
+# 	def get_success_url(self):
+# 		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
 	
-	def form_valid(self, form):
-		pk = self.kwargs['pk']
-		form.instance.ticket = Ticket.objects.get(pk=pk)
-		form.instance.poster = self.request.user
-		History.objects.create(user=self.request.user, action=f"Added Attachment", old_value="", new_value=form.instance.title, ticket=form.instance.ticket, icon_type='library_add')
-		return super().form_valid(form)
+# 	def form_valid(self, form):
+# 		pk = self.kwargs['pk']
+# 		form.instance.ticket = Ticket.objects.get(pk=pk)
+# 		form.instance.poster = self.request.user
+# 		History.objects.create(user=self.request.user, action=f"Added Attachment", old_value="", new_value=form.instance.title, ticket=form.instance.ticket, icon_type='library_add')
+# 		return super().form_valid(form)
 
-	def test_func(self):
-		ticket = Ticket.objects.get(pk= self.kwargs['pk'])
-		if self.request.user.ticket_set.filter(pk=ticket.id).exists() or (self.request.user.membership.team.project_set.filter(pk=ticket.team.id).exists() and self.request.user.membership.role == 'Admin'):
-			return True
-		return False
+# 	def test_func(self):
+# 		ticket = Ticket.objects.get(pk= self.kwargs['pk'])
+# 		if self.request.user.ticket_set.filter(pk=ticket.id).exists() or (self.request.user.membership.team.project_set.filter(pk=ticket.team.id).exists() and self.request.user.membership.role == 'Admin'):
+# 			return True
+# 		return False
 
 class AttachmentUpdateView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
 	model = Attachment
@@ -469,30 +469,30 @@ class AttachmentDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 			return True
 		return False
 
-class TicketDevCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
-	model = TicketDev
-	fields = ['user']
+# class TicketDevCreateView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
+# 	model = TicketDev
+# 	fields = ['user']
 
-	def get_form(self, form_class=None):
-		form = super().get_form(form_class)
-		current_ticketdevs_ids = Ticket.objects.get(pk=self.kwargs['pk']).developers.all().values_list('id',flat=True)
-		form.fields['user'].queryset = (Project.objects.get(pk=Ticket.objects.get(pk=self.kwargs['pk']).project.id).members).exclude(id__in=current_ticketdevs_ids)
-		return form
+# 	def get_form(self, form_class=None):
+# 		form = super().get_form(form_class)
+# 		current_ticketdevs_ids = Ticket.objects.get(pk=self.kwargs['pk']).developers.all().values_list('id',flat=True)
+# 		form.fields['user'].queryset = (Project.objects.get(pk=Ticket.objects.get(pk=self.kwargs['pk']).project.id).members).exclude(id__in=current_ticketdevs_ids)
+# 		return form
 
-	def get_success_url(self):
-		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
+# 	def get_success_url(self):
+# 		return reverse('ticket-info', kwargs={'pk': self.kwargs['pk']})
 	
-	def form_valid(self, form):
-		pk = self.kwargs['pk']
-		form.instance.ticket = Ticket.objects.get(pk=pk)
-		History.objects.create(user=self.request.user, action=f"Added User", old_value="", new_value=form.instance.user.username, ticket=form.instance.ticket, icon_type='person_add')
-		return super().form_valid(form)
+# 	def form_valid(self, form):
+# 		pk = self.kwargs['pk']
+# 		form.instance.ticket = Ticket.objects.get(pk=pk)
+# 		History.objects.create(user=self.request.user, action=f"Added User", old_value="", new_value=form.instance.user.username, ticket=form.instance.ticket, icon_type='person_add')
+# 		return super().form_valid(form)
 
-	def test_func(self):
-		ticket = Ticket.objects.get(pk=self.kwargs['pk'])
-		if self.request.user.ticket_set.filter(pk=ticket.id).exists() and self.request.user.membership.role == 'Admin':
-			return True
-		return False
+# 	def test_func(self):
+# 		ticket = Ticket.objects.get(pk=self.kwargs['pk'])
+# 		if self.request.user.ticket_set.filter(pk=ticket.id).exists() and self.request.user.membership.role == 'Admin':
+# 			return True
+# 		return False
 
 class TicketDevDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 	model = TicketDev
