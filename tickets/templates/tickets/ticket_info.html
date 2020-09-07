@@ -15,20 +15,7 @@
               <li class="breadcrumb-item active" aria-current="page">Ticket</li>
             </ol>
           </nav>
-          {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' or request.user.membership.role == 'Developer' or ticket.submitter == request.user %}
-            <div class="dropdown">
-              <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
-                <i class="material-icons">settings</i>
-              </button>
-              <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#project-edit-modal">Edit Ticket</a>
-                {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' %}
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item text-danger" href="{% url 'ticket-delete' ticket.id %}">Delete</a>
-                {% endif %}
-              </div>
-            </div>
-          {% endif %}
+          
         </div>
         <div class="container">
           <div class="row justify-content-center">
@@ -396,7 +383,7 @@
         </div>
 
       </div>
-      <div class="sidebar " id="sidebar">
+      <div class="sidebar"  id="sidebar-collapse">
         <div class="sidebar-content">
           <div class="chat-team-sidebar text-small">
             <div class="chat-team-sidebar-top">
@@ -404,14 +391,46 @@
                 
                 <div class="media-body">
                   <h5 class="mb-1"> Ticket Info </h5>
+
                 </div>
+                {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' or request.user.membership.role == 'Developer' or ticket.submitter == request.user %}
+                  <div class="dropdown">
+                    <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
+                      <i class="material-icons">settings</i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#project-edit-modal">Edit Ticket</a>
+                      {% if request.user.membership.role == 'Admin' or request.user.membership.role == 'Project Manager' %}
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" href="{% url 'ticket-delete' ticket.id %}">Delete</a>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
               </div>
-              
             </div>
             <div class="chat-team-sidebar-bottom">
               <div class="tab-content">
-                <div class="tab-pane fade show active" data-filter-list="list-group">
-                    <a class="list-group-item list-group-item-action" href="#">
+                <div class="tab-pane fade show active" id="members" role="tabpanel" data-filter-list="list-group">
+                    <a class="list-group-item ">
+                      <div class="media media-member mb-0">
+                        <div class="media-body">
+                          <h6 class="mb-0" data-filter-by="text">Title:</h6>
+                          <span data-filter-by="text">{{ ticket.title }}</span>
+                        </div>
+                      </div>
+                    </a>
+
+                    <a class="list-group-item ">
+                      <div class="media media-member mb-0">
+                        <div class="media-body">
+                          <h6 class="mb-0" data-filter-by="text">Description:</h6>
+                          <span data-filter-by="text">{{ ticket.description }}</span>
+                        </div>
+                      </div>
+                    </a>
+
+                    <a class="list-group-item ">
                       <div class="media media-member mb-0">
                         <div class="media-body">
                           <h6 class="mb-0" data-filter-by="text">Priority:</h6>
@@ -420,7 +439,7 @@
                       </div>
                     </a>
 
-                    <a class="list-group-item list-group-item-action" href="#">
+                    <a class="list-group-item" >
                       <div class="media media-member mb-0">
                         <div class="media-body">
                           <h6 class="mb-0" data-filter-by="text">Status:</h6>
@@ -429,7 +448,7 @@
                       </div>
                     </a>
 
-                    <a class="list-group-item list-group-item-action" href="#">
+                    <a class="list-group-item" >
                       <div class="media media-member mb-0">
                         <div class="media-body">
                           <h6 class="mb-0" data-filter-by="text">Ticket Type:</h6>
@@ -438,7 +457,7 @@
                       </div>
                     </a>
 
-                    <a class="list-group-item list-group-item-action" href="#">
+                    <a class="list-group-item" >
                       <div class="media media-member mb-0">
                         <div class="media-body">
                           <h6 class="mb-0" data-filter-by="text">Deadline:</h6>
@@ -451,7 +470,7 @@
                       </div>
                     </a>
 
-                    <a class="list-group-item list-group-item-action" href="#">
+                    <a class="list-group-item" >
                       <div class="media media-member mb-0">
                         <div class="media-body">
                           <h6 class="mb-0" data-filter-by="text">Submitter:</h6>
