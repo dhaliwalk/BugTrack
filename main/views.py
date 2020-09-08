@@ -3,6 +3,8 @@ from users.models import Team
 from users.views import RegisterUserJoinTeam
 from tickets.models import Ticket
 from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 def home(request):
 	context = {}
@@ -23,5 +25,5 @@ def home(request):
 		context['ticket_improvement_count'] = tickets.filter(ticket_type='Improvement').count()
 		return render(request, 'main/dashboard.html', context)
 	else:
-		return RegisterUserJoinTeam(request)
+		return HttpResponseRedirect(reverse('register-create'))
 	
