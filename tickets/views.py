@@ -21,7 +21,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(priority="High")
@@ -35,7 +35,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(priority="Medium")
@@ -48,7 +48,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(priority="Low")
@@ -61,7 +61,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(priority="None")
@@ -74,7 +74,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(Q(status="Open") | Q(status="In Progress"))
@@ -87,7 +87,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(Q(status="Closed")| Q(status="Resolved"))
@@ -100,7 +100,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(status="Waiting on More Info")
@@ -113,7 +113,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(ticket_type="New Feature")
@@ -126,7 +126,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(ticket_type="Bug")
@@ -139,7 +139,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(ticket_type="Improvement")
@@ -152,7 +152,7 @@ def TicketFilter(request, ticket_filter=None):
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order').distinct()
 		query = request.GET.get('query')
 		if query != None:
-			tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
+			tickets = tickets.filter(Q(title__icontains=query) | Q(priority__icontains=query) | Q(status__icontains=query) | Q(ticket_type__icontains=query)).distinct()
 		if query == '':
 			tickets = Ticket.objects.filter(Q(submitter=request.user) | Q(developers=request.user)).order_by('-date_updated')
 			tickets = tickets.filter(ticket_type="Task")
