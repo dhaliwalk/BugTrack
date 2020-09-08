@@ -54,7 +54,7 @@ def RegisterUserCreateTeam(request):
 			team = Team.objects.get(name=form_t.cleaned_data.get('name'))
 			instance = Membership(user=user, team=team, role='Admin')
 			instance.save()
-			messages.success(request, 'You account and team has been created you can now log in!')
+			messages.success(request, 'Your account and team has been created you can now log in!')
 			return redirect('login')
 		else:
 			messages.warning(request, 'Fields are Invalid')

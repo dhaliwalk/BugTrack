@@ -22,7 +22,7 @@ class UserUpdateForm(forms.ModelForm):
 class TeamUpdateForm(forms.ModelForm):
 	class Meta:
 		model = Team
-		fields = ['name', 'description']
+		fields = ['name', 'description', 'pin']
 
 
 class ProfileUpdateForm(forms.ModelForm):

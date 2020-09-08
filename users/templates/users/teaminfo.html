@@ -12,6 +12,13 @@
               <li class="breadcrumb-item active" aria-current="page">Team</li>
             </ol>
           </nav>
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
           {% if request.user.membership.role == 'Admin' %}
             <div class="dropdown">
               <button class="btn btn-round" role="button" data-toggle="dropdown" aria-expanded="false">
