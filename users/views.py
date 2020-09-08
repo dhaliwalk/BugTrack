@@ -26,6 +26,7 @@ def RegisterUserJoinTeam(request):
 			user = User.objects.get(username=form.cleaned_data.get('username'))
 			if Team.objects.filter(name=form_t.cleaned_data.get('team_name')).count() == 0:
 				messages.warning(request, 'Invalid Team Name')
+				user.delete()
 				return render(request, 'users/register_join.html', {'form': form, 'form_t': form_t})
 			else:
 				team = Team.objects.get(name=form_t.cleaned_data.get('team_name'))
@@ -34,6 +35,7 @@ def RegisterUserJoinTeam(request):
 					instance.save()
 				else:
 					messages.warning(request, 'Invalid Pin')
+					user.delete()
 					return render(request, 'users/register_join.html', {'form': form, 'form_t': form_t})
 			messages.success(request, 'You account has been created you can now log in!')
 			return redirect('login')
@@ -52,6 +54,11 @@ def RegisterUserCreateTeam(request):
 			form_t.save()
 			user = User.objects.get(username=form.cleaned_data.get('username'))
 			team = Team.objects.get(name=form_t.cleaned_data.get('name'))
+			if team:
+				pass
+			else:
+				messages.warning(request, 'Fields are Invalid')
+				user.delete()
 			instance = Membership(user=user, team=team, role='Admin')
 			instance.save()
 			messages.success(request, 'Your account and team has been created you can now log in!')
