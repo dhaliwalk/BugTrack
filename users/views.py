@@ -52,7 +52,7 @@ def RegisterUserCreateTeam(request):
 			form_t.save()
 			user = User.objects.get(username=form.cleaned_data.get('username'))
 			team = Team.objects.get(name=form_t.cleaned_data.get('name'))
-			instance = Membership(user=user, team=team, role='unassigned')
+			instance = Membership(user=user, team=team, role='Admin')
 			instance.save()
 			messages.success(request, 'You account and team has been created you can now log in!')
 			return redirect('login')
