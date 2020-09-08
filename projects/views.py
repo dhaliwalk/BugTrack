@@ -11,7 +11,7 @@ from .forms import TicketCreateForm, ProjectUpdateForm, ProjectMemberCreateForm
 from django.http import HttpResponse, HttpResponseRedirect
 from tickets.models import History
 from django.forms.models import model_to_dict
-from django.db.models import Case, Value, When, IntegerField
+from django.db.models import Q, Case, Value, When, IntegerField
 from datetime import datetime
 
 # def list(request):
@@ -101,7 +101,7 @@ def ProjectInfo(request, pk=None):
 
 
 	if query != None:
-		tickets = tickets.filter(title__contains=query)
+		tickets = tickets.filter(Q(title__contains=query) | Q(priority__contains=query) | Q(status__contains=query) | Q(ticket_type__contains=query)).distinct()
 	if query == '':
 		tickets = project.ticket_set.all().order_by('-date_created')
 		tickets = tickets.annotate(custom_order=Case(When(priority='High', then=Value(0)), When(priority='Medium', then=Value(1)), When(priority='Low', then=Value(2)), When(priority='None', then=Value(3)), When(status='Closed', then=Value(4)), output_field=IntegerField(),), custom_order2=Case(When(status='Closed', then=Value(1)), When(status='Resolved', then=Value(1)), default=Value(0), output_field=IntegerField(),)).order_by('custom_order2', 'custom_order')
