@@ -121,22 +121,22 @@ def Demo(request):
 	if request.GET.get('Project Manager') == 'Project Manager':
 		user = User.objects.get(username='DemoPM')
 		login(request, user)
-		return HttpResponseRedirect(reverse('home'))
+		return HttpResponseRedirect(reverse('team-list'))
 
 	elif request.GET.get('Admin') == 'Admin':
 		user = User.objects.get(username='DemoAdmin')
 		login(request, user)
-		return HttpResponseRedirect(reverse('home'))
+		return HttpResponseRedirect(reverse('team-list'))
 
 	elif request.GET.get('Developer') == 'Developer':
 		user = User.objects.get(username='DemoDeveloper')
 		login(request, user)
-		return HttpResponseRedirect(reverse('home'))
+		return HttpResponseRedirect(reverse('team-list'))
 
 	elif request.GET.get('Client') == 'Client':
 		user = User.objects.get(username='DemoClient')
 		login(request, user)
-		return HttpResponseRedirect(reverse('home'))
+		return HttpResponseRedirect(reverse('team-list'))
 	return render(request, 'users/demo.html')
 
 
