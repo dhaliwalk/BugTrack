@@ -6,6 +6,7 @@ urlpatterns = [
     path('list/', user_views.TeamList, name='team-list'),
     path('members/', user_views.MembersList, name='members-list'),
     path('<int:pk>/user/profile/', user_views.UserProfile, name='user-profile'),
+    path('demo/', user_views.Demo, name='demo'),
     # path('join/', user_views.TeamJoin, name='team-join'),
     path('<int:pk>/membership/update/', MembershipUpdateView.as_view(), name='membership-update'),
     path('<int:pk>/membership/delete/', MembershipDeleteView.as_view(), name='membership-delete'),

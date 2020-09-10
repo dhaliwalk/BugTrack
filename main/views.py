@@ -25,5 +25,5 @@ def home(request):
 		context['ticket_improvement_count'] = tickets.filter(ticket_type='Improvement').count()
 		return render(request, 'main/dashboard.html', context)
 	else:
-		return HttpResponseRedirect(reverse('register-create'))
+		return HttpResponseRedirect(reverse('login'))
 	

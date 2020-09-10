@@ -1,0 +1,45 @@
+{% extends "main/index.html" %}
+{% load crispy_forms_tags %}
+{% block title %} BugTrack - Login {% endblock title %}
+{% block content %}
+
+	<div class="navbar bg-white breadcrumb-bar">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'demo' %}">Login</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Demo</li>
+        </ol>
+      </nav>
+	</div>
+
+	<div class="main-container fullscreen">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-5 col-lg-6 col-md-7">
+          <div class="text-center">
+            <h1 class="h2">What role would you like to demo?</h1>
+            <p class="lead">Choose a role to demo the application</p>
+            <form class="mb-3" method="GET">
+              <input class="btn btn-lg btn-block btn-primary" role="button" value="Admin" name="Admin" type="submit">
+            </form>
+
+            <form class="mb-3" method="GET">
+              <input class="btn btn-lg btn-block btn-primary" role="button" value="Project Manager" name="Project Manager" type="submit">
+            </form>
+
+            <form class="mb-3" method="GET">
+              <input class="btn btn-lg btn-block btn-primary" role="button" value="Developer" name="Developer" type="submit">
+            </form>
+
+            <form class="mb-3" method="GET">
+              <input class="btn btn-lg btn-block btn-primary" role="button" value="Client" name="Client" type="submit">
+            </form>
+            
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

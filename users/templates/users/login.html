@@ -20,6 +20,8 @@
           <div class="text-center">
             <h1 class="h2">Welcome Back &#x1f44b;</h1>
             <p class="lead">Log in to your account to continue</p>
+            <div><small>Try out the application using a demo user! <a href="{% url 'demo' %}">Click Here</a>
+              </small></div>
             <form method="POST">
             	{% csrf_token %}
               <div class="form-group">
@@ -29,6 +31,8 @@
               <button class="btn btn-lg btn-block btn-primary" role="button" type="submit">
                 Log in
               </button>
+              
+              
               <small>Don't have an account yet? <a href="{% url 'register' %}">Create one</a>
               </small>
             </form>

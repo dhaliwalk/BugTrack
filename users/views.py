@@ -15,6 +15,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.db.models import Q
+from django.contrib.auth import login
 
 @unauthenticated_user
 def RegisterUserJoinTeam(request):
@@ -115,6 +116,28 @@ def UserProfile(request, pk=None):
 # class TeamCreateView(LoginRequiredMixin, CreateView):
 # 	model = Team
 # 	fields = ['name', 'pin']
+
+def Demo(request):
+	if request.GET.get('Project Manager') == 'Project Manager':
+		user = User.objects.get(username='DemoPM')
+		login(request, user)
+		return HttpResponseRedirect(reverse('home'))
+
+	elif request.GET.get('Admin') == 'Admin':
+		user = User.objects.get(username='DemoAdmin')
+		login(request, user)
+		return HttpResponseRedirect(reverse('home'))
+
+	elif request.GET.get('Developer') == 'Developer':
+		user = User.objects.get(username='DemoDeveloper')
+		login(request, user)
+		return HttpResponseRedirect(reverse('home'))
+
+	elif request.GET.get('Client') == 'Client':
+		user = User.objects.get(username='DemoClient')
+		login(request, user)
+		return HttpResponseRedirect(reverse('home'))
+	return render(request, 'users/demo.html')
 
 
 def TeamList(request):
